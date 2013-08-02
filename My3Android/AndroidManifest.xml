@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of My3 Prepay for Android
+  ~
+  ~ Copyright © 2013  Damien O'Reilly
+  ~
+  ~ My3 Prepay for Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ My3 Prepay for Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Report bugs or new features at: https://github.com/DamienOReilly/My3Usage
+  ~ Contact the author at:          damienreilly@gmail.com
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="damo.three.ie"
+          android:installLocation="auto"
+          android:versionCode="8"
+          android:versionName="0.8">
+
+    <uses-sdk
+            android:minSdkVersion="7"
+            android:targetSdkVersion="18"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:logo="@drawable/ic_actionbar_icon"
+            android:label="@string/app_name">
+        <activity
+                android:name="damo.three.ie.activity.My3Activity"
+                android:label="@string/app_name"
+                android:theme="@style/ActionBarCustom">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name="damo.three.ie.activity.SettingsActivity"
+                android:theme="@style/ActionBarCustom"/>
+    </application>
+
+</manifest>

@@ -1,0 +1,28 @@
+#Android/J EE specific
+bin
+gen
+gen-external-apklibs
+proguard
+lint.xml
+local.properties
+release.properties
+*.class
+*.apk
+
+#Maven
+target
+pom.xml.*
+
+#Eclipse
+.project
+.classpath
+.settings
+.metadata
+
+#IntelliJ IDEA
+.idea
+*.iml
+
+#Other
+.pmd
+reports

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of My3 Prepay for Android
+  ~
+  ~ Copyright © 2013  Damien O'Reilly
+  ~
+  ~ My3 Prepay for Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ My3 Prepay for Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Report bugs or new features at: https://github.com/DamienOReilly/My3Usage
+  ~ Contact the author at:          damienreilly@gmail.com
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:summary="My3 PrePay settings"
+        android:title="Login information">
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="number"
+            android:key="mobile"
+            android:summary="Please enter your 3 mobile number"
+            android:title="Mobile number" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textPassword"
+            android:key="password"
+            android:summary="Please enter your password"
+            android:title="Password" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:summary="Settings"
+        android:title="Settings">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="refresh"
+            android:summary="Will refresh your usage immediatetly when you open the application"
+            android:title="Refresh usage on application startup" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="intermediate_server"
+            android:summary="Faster responce when on 2G and somewhat when on 3G. Relay server is at secure.damienoreilly.org and traffic is encrypted over TLS. (2G/3G only. Not used when on Wi-Fi)"
+            android:title="Use intermediate server" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
