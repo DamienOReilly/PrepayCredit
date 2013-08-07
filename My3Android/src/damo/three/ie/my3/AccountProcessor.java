@@ -59,19 +59,10 @@ import java.util.regex.Pattern;
 
 public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
 
-    private static final String INTERMEDIATE_SERVER_URL = "https://secure.damienoreilly.org/My3WebService/FetchUsage";
-    private static final String MY3_URL = "https://sso.three.ie/mylogin/?service=https%3A%2F%2Fmy3account.three.ie%2FThreePortal%2Fappmanager%2FThree%2FMy3ROI%3F_pageLabel%3DP33403896361331912377205%26_nfpb%3Dtrue%26resource=portlet";
-    private static final String MY3_USAGE_PAGE = "https://my3account.three.ie/My_account_balance";
-    private static final String MY3_TOKEN_PAGE = "https://my3account.three.ie/ThreePortal/appmanager/Three/My3ROI?_pageLabel=P33403896361331912377205&_nfpb=true&resource=portlet&ticket=ST-";
-    private static final String LOGIN_TOKEN_REGEX = ".*<input type=\"hidden\" name=\"lt\" value=\"(LT-.*)\" />.*";
-    private static final String LOGGED_IN_TOKEN_REGEX = ".*ticket=ST-(.*)';.*";
-    private static final String OUT_OF_BUNDLE_REGEX = ".*Out-of-allowance data used since(.*)</p>.*";
-    private static final String TAG = "My3";
-
     private HttpClient httpClient = null;
     private String pageContent = null;
     private Throwable damn = null;
-    private SharedPreferences sharedPrefs = null;
+    private SharedPreferences sharedPreferences = null;
     private JSONArray jsonArray = null;
     private List<NameValuePair> postData = null;
 
@@ -97,9 +88,9 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
 
         this.httpClient = ThreeHttpClient.getInstance(context).getHttpClient();
         postData = new ArrayList<NameValuePair>();
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        addPropertyToPostData("username", sharedPrefs.getString("mobile", ""));
-        addPropertyToPostData("password", sharedPrefs.getString("password", ""));
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        addPropertyToPostData("username", sharedPreferences.getString("mobile", ""));
+        addPropertyToPostData("password", sharedPreferences.getString("password", ""));
     }
 
     /**
@@ -123,12 +114,12 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
                 .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         // Are we going to use the intermediate server?
-        if ((sharedPrefs.getBoolean("intermediate_server", true))
+        if ((sharedPreferences.getBoolean("intermediate_server", true))
                 && (!wifi.isConnected())) {
 
-            Log.d(TAG, "Using: secure.damienoreilly.org");
+            Log.d(Constants.TAG, "Using: secure.damienoreilly.org");
             pageContent = new ProcessRequest(httpClient,
-                    INTERMEDIATE_SERVER_URL, postData).process();
+                    Constants.INTERMEDIATE_SERVER_URL, postData).process();
 
             // Did the My3WebService give us back an exception?
             if (pageContent.startsWith("Exception[")) {
@@ -144,24 +135,24 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
 
         } else {
 
-            pageContent = new ProcessRequest(httpClient, MY3_URL).process();
-            Log.d(TAG, "using: my3account.three.ie");
+            pageContent = new ProcessRequest(httpClient, Constants.MY3_URL).process();
+            Log.d(Constants.TAG, "using: my3account.three.ie");
 
             // Check if this brought us to the login page.., if so, then login.
             // Sometimes when using my3 on gsm, we aren't asked for login. Seems
             // to be some server side session, as its not handled my cookies
             // anyway.
-            Pattern p1 = Pattern.compile(LOGIN_TOKEN_REGEX, Pattern.DOTALL);
+            Pattern p1 = Pattern.compile(Constants.LOGIN_TOKEN_REGEX, Pattern.DOTALL);
             Matcher m1 = p1.matcher(pageContent);
 
             // If we retrieved a login-token, attempt to submit login
             // credentials
             if (m1.matches()) {
-                Log.d(TAG, "Logging in...");
+                Log.d(Constants.TAG, "Logging in...");
 
                 addPropertyToPostData("lt", m1.group(1));
 
-                pageContent = new ProcessRequest(httpClient, MY3_URL, postData)
+                pageContent = new ProcessRequest(httpClient, Constants.MY3_URL, postData)
                         .process();
 
                 if (pageContent.contains("Sorry, you've entered an invalid")) {
@@ -175,14 +166,13 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
                 }
 
                 acceptToken();
-                /**
-                 * Otherwise check if we are already logged in Sometimes when on
-                 * GSM, it auto logs you in and you get sent to to Page with ST
-                 * token.
-                 */
+
+                // Otherwise check if we are already logged in Sometimes when on
+                // GSM, it auto logs you in and you get sent to to Page with ST
+                // token.
             } else if (pageContent.contains("Login successful.")) {
 
-                Log.d(TAG,
+                Log.d(Constants.TAG,
                         "Seems we are already logged in! Fairly common when on GSM, not WiFi.");
                 acceptToken();
 
@@ -191,7 +181,6 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
                         "Error logging in. Unexpected response from server.");
             }
         }
-
     }
 
     /**
@@ -199,17 +188,16 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
      *
      * @throws ThreeException
      * @throws IOException
-     * @throws ParseException
      * @throws JSONException
      */
     private void acceptToken() throws ThreeException, IOException,
-            ParseException, JSONException {
-        Pattern p1 = Pattern.compile(LOGGED_IN_TOKEN_REGEX, Pattern.DOTALL);
+            JSONException {
+        Pattern p1 = Pattern.compile(Constants.LOGGED_IN_TOKEN_REGEX, Pattern.DOTALL);
         Matcher m1 = p1.matcher(pageContent);
 
         if (m1.matches()) {
-            Log.d(TAG, "Submitting token via: " + MY3_TOKEN_PAGE + m1.group(1));
-            pageContent = new ProcessRequest(httpClient, MY3_TOKEN_PAGE
+            Log.d(Constants.TAG, "Submitting token via: " + Constants.MY3_TOKEN_PAGE + m1.group(1));
+            pageContent = new ProcessRequest(httpClient, Constants.MY3_TOKEN_PAGE
                     + m1.group(1)).process();
 
             my3FetchUsage();
@@ -231,9 +219,9 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
             JSONException {
 
         if (pageContent.contains("Welcome back.")) {
-            Log.d(TAG, "Grabbing usage.");
+            Log.d(Constants.TAG, "Grabbing usage.");
 
-            pageContent = new ProcessRequest(httpClient, MY3_USAGE_PAGE)
+            pageContent = new ProcessRequest(httpClient, Constants.MY3_USAGE_PAGE)
                     .process();
             my3ParseUsage();
 
@@ -252,7 +240,7 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
     private void my3ParseUsage() throws JSONException {
         // The HTML on my3 is pig-ugly, so we will use JSoup to
         // clean and parse it.
-        Log.d(TAG, "Ok, now parsing usage. my3.");
+        Log.d(Constants.TAG, "Ok, now parsing usage. my3.");
 
         Document doc = Jsoup.parse(pageContent);
         HtmlUtilities.removeComments(doc);
@@ -263,7 +251,8 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
         // format that the app and webservice will use.
         jsonArray = new JSONArray();
 
-        // three don't have a sub label for the 3-to-3 calls.. feck them!
+        // three don't have a sub label for the 3-to-3 calls, which is not consistent with other items.
+        // .. feck them!
         boolean three2threeCallsBug = false;
 
         for (Element element : elements) {
@@ -288,10 +277,8 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
 
                     if (three2threeCallsBug) {
                         currentItem.put("item", "3 to 3 Calls");
-                        three2threeCallsBug = false;
                     } else {
-                        // Get rid of that "non-breaking space" character if it
-                        // exists
+                        // Get rid of that "non-breaking space" character if it exists
                         String titleToClean = subsubelements.select("td")
                                 .get(0).text().replace("\u00a0", "").trim();
                         currentItem.put("item", titleToClean);
@@ -305,7 +292,7 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
                     // Out of Bundle charges has an extra property
                     if (currentItem.getString("item").equals("Internet")) {
 
-                        Pattern p1 = Pattern.compile(OUT_OF_BUNDLE_REGEX,
+                        Pattern p1 = Pattern.compile(Constants.OUT_OF_BUNDLE_REGEX,
                                 Pattern.DOTALL);
                         Matcher m1 = p1.matcher(pageContent);
 
@@ -319,6 +306,10 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
 
             }
 
+            // reset the 3-to-3 call bug flag for next {@link Element}
+            if (three2threeCallsBug) {
+                three2threeCallsBug = false;
+            }
         }
     }
 
@@ -377,7 +368,6 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
         // to be reused. Therefore I'm not cleaning up in finally{} block.
 
         return null;
-
     }
 
     /**

@@ -27,12 +27,12 @@
         android:id="@+id/menuRefresh"
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/refresh"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menuSettings"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/settings"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="ifRoom"/>
 
 </menu>

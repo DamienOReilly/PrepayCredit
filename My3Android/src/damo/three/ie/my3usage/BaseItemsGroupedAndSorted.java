@@ -26,6 +26,7 @@ import damo.three.ie.my3usage.items.Other;
 import damo.three.ie.my3usage.items.OutOfBundle;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.LocalDate;
 
 import java.util.List;
 
@@ -34,16 +35,20 @@ public class BaseItemsGroupedAndSorted {
     private final List<BaseItem> baseItems;
     private String groupName;
     private GroupType groupType;
-    private final DateTime jodaNow;
+    private final LocalDate dateNow;
 
     public BaseItemsGroupedAndSorted(List<BaseItem> baseItemCommons) {
 
         this.baseItems = baseItemCommons;
-        jodaNow = new DateTime();
+        DateTime now = new DateTime();
+        dateNow = now.toLocalDate();
         updateGroupName();
 
     }
 
+    /**
+     * Add some meta-data to the usage groups
+     */
     private void updateGroupName() {
         String toProcess = baseItems.get(0).getValue1formatted();
 
@@ -62,10 +67,9 @@ public class BaseItemsGroupedAndSorted {
         } else {
 
             DateTime groupDateTime = new DateTime(baseItems.get(0).getValue1().longValue());
-
-
-            int days = Days.daysBetween(jodaNow, groupDateTime).getDays();
-            days++;
+            LocalDate localGroupDate = groupDateTime.toLocalDate();
+            // get number of days between dates rather than number of absolute days based on hours difference
+            int days = Days.daysBetween(dateNow.toDateTimeAtStartOfDay(), localGroupDate.toDateTimeAtStartOfDay()).getDays();
 
             if (days > 5) {
                 groupType = GroupType.GOOD;

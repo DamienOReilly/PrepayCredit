@@ -22,12 +22,12 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="1dp"
-    android:paddingLeft="3dp"
-    android:paddingRight="3dp">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingBottom="1dp"
+              android:paddingLeft="3dp"
+              android:paddingRight="3dp">
 
     <TextView
         android:id="@+id/textViewExtraInfo"
@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:textIsSelectable="false"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <!--  Just using ActionBarSherlock's LinearLayout for divider support pre API 11 -->
     <com.actionbarsherlock.internal.widget.IcsLinearLayout
@@ -45,6 +45,6 @@
         android:layout_height="wrap_content"
         android:showDividers="middle"
         android:divider="@drawable/divider"
-        android:dividerPadding="2dp" />
+        android:dividerPadding="2dp"/>
 
 </LinearLayout>

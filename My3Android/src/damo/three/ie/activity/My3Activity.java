@@ -67,11 +67,8 @@ public class My3Activity extends SherlockFragmentActivity implements
     private Boolean working = false;
     private Boolean refreshedOnStart = false;
     private Boolean refreshDoneSinceLoadingPersistedData = false;
-
     private SharedPreferences sharedPreferences = null;
-
     private UpdatingView updatingView = null;
-    // private LinearLayout parentView = null;
     private RelativeLayout parentView = null;
     private LinearLayout baseUsageView = null;
     private ScrollView scrollView = null;
@@ -101,7 +98,6 @@ public class My3Activity extends SherlockFragmentActivity implements
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         setContentView(R.layout.main);
-        // parentView = (LinearLayout) this.findViewById(R.id.main);
         parentView = (RelativeLayout) findViewById(R.id.main);
         lastRefreshed = (TextView) findViewById(R.id.textViewLastRefreshed);
 
@@ -137,7 +133,6 @@ public class My3Activity extends SherlockFragmentActivity implements
             displayUsages(accountProcessorFragment.getItems());
             updateLastRefreshedTextView(accountProcessorFragment.getDate());
         }
-
     }
 
     @Override
@@ -151,22 +146,23 @@ public class My3Activity extends SherlockFragmentActivity implements
         }
 
         // refresh usage on startup ?
+        // check if we already refreshed. Activity is re-created each
+        // rotate, so checked persisted value we stored
+        // onSaveInstanceState()
         if ((sharedPreferences.getBoolean("refresh", false))
                 && (!refreshedOnStart)) {
 
-            // check if we already refreshed. Activity is re-created each
-            // rotate, so checked persisted value we stored
-            // onSaveInstanceState()
             getCreditInfo();
             refreshedOnStart = true;
         }
+
         // If previous usage info was persisted, show it, unless we are
         // currently retrieving new usages.
         if (!refreshDoneSinceLoadingPersistedData) {
             SharedPreferences sharedPref = getSharedPreferences(
                     "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
             String usage = sharedPref.getString("usage_info", null);
-            // first check i f anything was persisted
+            // first check if anything was persisted
             if (usage != null) {
                 try {
                     List<BaseItem> baseItems = JSONUtils
@@ -174,11 +170,8 @@ public class My3Activity extends SherlockFragmentActivity implements
                     // check array size incase it was just an empty json
                     // string stored
                     if (baseItems.size() > 0) {
-                        // trailing no-break space added to prevent italics
-                        // been clipped at the end
                         updateLastRefreshedTextView(sharedPref.getString(
                                 "last_refreshed", "unknown"));
-                        lastRefreshed.setVisibility(View.VISIBLE);
                         displayUsages(baseItems);
 
                     }
@@ -189,18 +182,16 @@ public class My3Activity extends SherlockFragmentActivity implements
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
     /**
-     * Update the LastRefreshed TextView Add no break space char to prevent
-     * italics clipping on the right
+     * Update the LastRefreshed TextView
      *
      * @param last String representation of a date when a last refresh was performed
      */
     private void updateLastRefreshedTextView(String last) {
-        // non line breaking space appended to the end
+        // non line breaking space appended to the end to prevent last italic char been clipped
         lastRefreshed.setText("Last refreshed: " + last + "\u00A0");
         lastRefreshed.setVisibility(View.VISIBLE);
     }
@@ -243,7 +234,6 @@ public class My3Activity extends SherlockFragmentActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     /**
@@ -286,7 +276,6 @@ public class My3Activity extends SherlockFragmentActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         SherlockDialogFragment dialog = new InfoDialog();
         dialog.show(ft, "dialog");
-
     }
 
     /**
@@ -296,7 +285,6 @@ public class My3Activity extends SherlockFragmentActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         SherlockDialogFragment dialog = new RegisterDialog();
         dialog.show(ft, "dialog");
-
     }
 
     /**
@@ -315,7 +303,6 @@ public class My3Activity extends SherlockFragmentActivity implements
         displayLoadingView(false);
 
         working = false;
-
     }
 
     /**
@@ -385,16 +372,21 @@ public class My3Activity extends SherlockFragmentActivity implements
         if (scrollView == null) {
             scrollView = new ScrollView(this);
 
-            parentView.addView(scrollView, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
+            // add the ScrollView to the top of the RelativeLayout, but do not overlap the lastRefreshed TextView
+            RelativeLayout.LayoutParams scrollViewLayoutParams = new
+                    RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            parentView.addView(scrollView, scrollViewLayoutParams);
+            RelativeLayout.LayoutParams relativeLayoutParameters =
+                    (RelativeLayout.LayoutParams) scrollView.getLayoutParams();
+            relativeLayoutParameters.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            relativeLayoutParameters.addRule(RelativeLayout.ABOVE, lastRefreshed.getId());
         }
 
         if (baseUsageView == null) {
 
             baseUsageView = new LinearLayout(this);
             baseUsageView.setOrientation(LinearLayout.VERTICAL);
-            scrollView.addView(baseUsageView, new LinearLayout.LayoutParams(
+            scrollView.addView(baseUsageView, new ScrollView.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         }
 
@@ -403,12 +395,13 @@ public class My3Activity extends SherlockFragmentActivity implements
             baseUsageView.removeAllViews();
             baseUsageView.setVisibility(View.GONE);
 
-            List<BaseItemsGroupedAndSorted> baseItemsGroupedAndSorteds = new OrganiseItems(
+            List<BaseItemsGroupedAndSorted> baseItemsGroupedAndSorted = new OrganiseItems(
                     usageItems).groupUsages();
 
-            if (baseItemsGroupedAndSorteds != null) {
+            if (baseItemsGroupedAndSorted != null) {
 
-                for (BaseItemsGroupedAndSorted b : baseItemsGroupedAndSorteds) {
+                // just to test scroll view over text view
+                for (BaseItemsGroupedAndSorted b : baseItemsGroupedAndSorted) {
 
                     UsageView l = new UsageView(getBaseContext(), b);
                     baseUsageView.addView(l);
@@ -417,11 +410,7 @@ public class My3Activity extends SherlockFragmentActivity implements
 
                 baseUsageView.setVisibility(View.VISIBLE);
                 refreshDoneSinceLoadingPersistedData = true;
-
             }
-
         }
-
     }
-
 }

@@ -30,6 +30,14 @@ import java.text.ParseException;
 
 public class ItemFactory {
 
+    /**
+     * Our usage factory.
+     *
+     * @param item JSON item to create usage object from
+     * @return {@link BaseItem} usage object
+     * @throws ParseException
+     * @throws JSONException
+     */
     public BaseItem createItem(JSONObject item) throws ParseException,
             JSONException {
 
@@ -61,7 +69,6 @@ public class ItemFactory {
             return new TopUp(item.getString("value1"), item.getString("value2"));
         else
             return new Other(item.getString("value1"), item.getString("value2"));
-
     }
 
 }

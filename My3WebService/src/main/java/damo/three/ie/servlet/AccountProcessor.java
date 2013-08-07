@@ -264,7 +264,11 @@ class AccountProcessor {
                     }
                     jsonArray.put(currentItem);
                 }
+            }
 
+            // reset the 3-to-3 call bug flag for next {@link Element}
+            if (three2threeCallsBug) {
+                three2threeCallsBug = false;
             }
 
         }

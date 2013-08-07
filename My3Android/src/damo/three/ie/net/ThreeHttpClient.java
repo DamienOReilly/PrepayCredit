@@ -41,7 +41,7 @@ import java.security.cert.CertificateException;
 public class ThreeHttpClient {
 
     private static ThreeHttpClient threeHttpClient;
-    private Context context;
+    private final Context context;
 
     private ThreeHttpClient(Context context) {
         this.context = context;
@@ -57,7 +57,7 @@ public class ThreeHttpClient {
      * @throws KeyStoreException
      * @throws IOException
      */
-    public static ThreeHttpClient getInstance(Context context) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public static ThreeHttpClient getInstance(Context context) {
 
         if (threeHttpClient == null) {
             threeHttpClient = new ThreeHttpClient(context);

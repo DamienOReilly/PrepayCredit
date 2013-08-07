@@ -31,7 +31,7 @@ import damo.three.ie.R;
 public class SettingsActivity extends SherlockPreferenceActivity {
 
     // addPreferencesFromResource(int) in android.preference.PreferenceActivity has been deprecated
-    // Recommendation is to use PreferenceFragment. support-v4 lib doesn't have support for this however!
+    // Recommendation is to use PreferenceFragment, but support-v4 lib doesn't have support for this however!
     @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,6 @@ public class SettingsActivity extends SherlockPreferenceActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
         return true;
     }
 

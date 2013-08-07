@@ -22,6 +22,6 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <size android:height="0.5dip" />
-    <solid android:color="@color/light_gray" />
+    <size android:height="0.5dip"/>
+    <solid android:color="@color/light_gray"/>
 </shape>

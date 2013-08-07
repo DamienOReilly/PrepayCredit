@@ -22,11 +22,11 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/usages_background">
+                android:id="@+id/main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@drawable/usages_background">
 
     <TextView
         android:id="@+id/textViewLastRefreshed"
@@ -39,6 +39,6 @@
         android:textColor="@color/dark_blue"
         android:textSize="14sp"
         android:textStyle="italic|bold"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
 </RelativeLayout>

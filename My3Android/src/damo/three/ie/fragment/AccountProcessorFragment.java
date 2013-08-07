@@ -30,10 +30,8 @@ import damo.three.ie.my3usage.BaseItem;
 import damo.three.ie.util.DateUtils;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
@@ -51,10 +49,8 @@ public class AccountProcessorFragment extends SherlockFragment {
         void onAccountUsageReceived();
 
         void onAccountUsageExceptionReceived(String exception);
-
     }
 
-    private AccountProcessor accountProcessor;
     private AccountProcessorListener accountProcessorListener;
 
     /**
@@ -72,7 +68,6 @@ public class AccountProcessorFragment extends SherlockFragment {
         }
 
         accountProcessorListener = (AccountProcessorListener) activity;
-
     }
 
     /**
@@ -99,8 +94,6 @@ public class AccountProcessorFragment extends SherlockFragment {
     /**
      * Kick off the Usage fetcher.
      *
-     * @throws KeyManagementException
-     * @throws UnrecoverableKeyException
      * @throws KeyStoreException
      * @throws NoSuchAlgorithmException
      * @throws CertificateException
@@ -111,7 +104,7 @@ public class AccountProcessorFragment extends SherlockFragment {
             NoSuchAlgorithmException, CertificateException, IOException {
         working = true;
         items = null;
-        accountProcessor = new AccountProcessor(this);
+        AccountProcessor accountProcessor = new AccountProcessor(this);
         accountProcessor.execute();
 
     }

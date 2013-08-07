@@ -45,7 +45,7 @@ public class NumberUtils {
      * @return {@link String}
      */
     public static String formatFloat(Number input) {
-        return new DecimalFormat("#,###.00").format(input
+        return new DecimalFormat("#,##0.00").format(input
                 .floatValue());
     }
 
@@ -57,7 +57,7 @@ public class NumberUtils {
      */
     public static String formatMoney(Number input) {
         // EURO symbol
-        return new DecimalFormat("\u20AC#,###.00").format(input
+        return new DecimalFormat("\u20AC#,##0.00").format(input
                 .floatValue());
 
     }

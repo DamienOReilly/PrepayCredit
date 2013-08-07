@@ -31,13 +31,13 @@
             android:inputType="number"
             android:key="mobile"
             android:summary="Please enter your 3 mobile number"
-            android:title="Mobile number" />
+            android:title="Mobile number"/>
         <EditTextPreference
             android:defaultValue=""
             android:inputType="textPassword"
             android:key="password"
             android:summary="Please enter your password"
-            android:title="Password" />
+            android:title="Password"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -47,12 +47,12 @@
             android:defaultValue="false"
             android:key="refresh"
             android:summary="Will refresh your usage immediatetly when you open the application"
-            android:title="Refresh usage on application startup" />
+            android:title="Refresh usage on application startup"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="intermediate_server"
             android:summary="Faster responce when on 2G and somewhat when on 3G. Relay server is at secure.damienoreilly.org and traffic is encrypted over TLS. (2G/3G only. Not used when on Wi-Fi)"
-            android:title="Use intermediate server" />
+            android:title="Use intermediate server"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -26,8 +26,8 @@ import damo.three.ie.my3usage.BaseItem;
 
 public class Other extends BaseItem {
 
-    private String value1;
-    private String value2;
+    private final String value1;
+    private final String value2;
 
     public Other(String value1str, String value2str) {
         this.value1 = value1str;

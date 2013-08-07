@@ -49,14 +49,14 @@ along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
   http://actionbarsherlock.com/  
   Apache License v2: https://github.com/JakeWharton/ActionBarSherlock/blob/master/LICENSE.txt 
 
-* JSoup 
-  http://jsoup.org/
-  MIT License: http://jsoup.org/license
+* JSoup  
+  http://jsoup.org/  
+  MIT License: http://jsoup.org/license  
 
 * JSON  
-  http://www.json.org/
-  MIT License: http://www.json.org/license.html
+  http://www.json.org/  
+  MIT License: http://www.json.org/license.html  
   
-* Joda Time
-  http://joda-time.sourceforge.net
-  Apache License v2: http://joda-time.sourceforge.net/license.html
+* Joda Time  
+  http://joda-time.sourceforge.net  
+  Apache License v2: http://joda-time.sourceforge.net/license.html  

@@ -26,7 +26,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>damo.three.ie.my3android</groupId>
-	<artifactId>my3</artifactId>
+	<artifactId>my3android</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>My3 Android</name>
 	<packaging>apk</packaging>

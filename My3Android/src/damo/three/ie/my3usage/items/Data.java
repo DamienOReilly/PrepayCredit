@@ -46,7 +46,7 @@ public class Data extends BaseItem {
         return NumberUtils.formatFloat(value2.floatValue() / 1024) + "GB";
     }
 
-    private void setValue1(String value1str) throws ParseException {
+    private void setValue1(String value1str) {
         value1 = DateUtils.parseDate(value1str);
     }
 

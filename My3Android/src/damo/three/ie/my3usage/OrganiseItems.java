@@ -27,7 +27,7 @@ import java.util.*;
 public class OrganiseItems {
 
     private final List<BaseItem> baseItemCommons;
-    final List<BaseItemsGroupedAndSorted> baseItemsGroupedAndSorted;
+    private final List<BaseItemsGroupedAndSorted> baseItemsGroupedAndSorted;
 
     public OrganiseItems(List<BaseItem> baseItemCommons) {
         this.baseItemCommons = baseItemCommons;
@@ -58,11 +58,9 @@ public class OrganiseItems {
 
             baseItemsGroupedAndSorted.add(new BaseItemsGroupedAndSorted(
                     tmpBaseItems));
-
         }
 
         return baseItemsGroupedAndSorted;
-
     }
 
 }

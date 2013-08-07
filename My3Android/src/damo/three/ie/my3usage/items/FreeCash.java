@@ -46,7 +46,7 @@ public class FreeCash extends BaseItem {
         return NumberUtils.formatMoney(value2);
     }
 
-    private void setValue1(String value1str) throws ParseException {
+    private void setValue1(String value1str) {
         value1 = DateUtils.parseDate(value1str);
     }
 

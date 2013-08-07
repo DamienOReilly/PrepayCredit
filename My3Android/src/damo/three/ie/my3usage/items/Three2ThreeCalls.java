@@ -47,7 +47,7 @@ public class Three2ThreeCalls extends BaseItem {
         return NumberUtils.formatNumeric(value2);
     }
 
-    private void setValue1(String value1str) throws ParseException {
+    private void setValue1(String value1str) {
         value1 = DateUtils.parseDate(value1str);
     }
 

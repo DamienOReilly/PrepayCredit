@@ -22,6 +22,9 @@
 
 package damo.three.ie.my3usage;
 
+/**
+ * Basic ENUM to distinguish usage groups. Mainly identifiable how close they are to expiring.
+ */
 public enum GroupType {
     GOOD, WARNING, BAD
 }
