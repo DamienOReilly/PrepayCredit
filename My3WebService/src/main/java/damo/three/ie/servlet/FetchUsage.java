@@ -24,58 +24,76 @@ package damo.three.ie.servlet;
 
 import org.apache.log4j.Logger;
 
+import damo.three.ie.servlet.util.ThreeException;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "FetchUsage", urlPatterns = {"/FetchUsage/*"})
+@WebServlet(name = "FetchUsage", urlPatterns = { "/FetchUsage/*" })
 public class FetchUsage extends HttpServlet {
 
-    private static final long serialVersionUID = -3599018287634291134L;
-    private static final Logger log = Logger.getLogger(FetchUsage.class.getName());
+	private static final long serialVersionUID = -3599018287634291134L;
+	private static final Logger log = Logger.getLogger(FetchUsage.class
+			.getName());
 
-    /**
-     * Handle GET requests. Will most likely remove this.
-     */
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
+	private String username;
+	private String password;
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+	/**
+	 * Handle GET requests. Will most likely remove this. Only here for testing
+	 * purposes.
+	 */
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out;
-        try {
-            out = response.getWriter();
-            AccountProcessor ap = new AccountProcessor(out, username, password);
-            ap.go();
-        } catch (IOException e) {
-            log.error(e);
-        }
+		username = request.getParameter("username");
+		password = request.getParameter("password");
 
-    }
+		go(response);
 
-    /**
-     * Handle POST requests
-     */
-    public void doPost(HttpServletRequest request, HttpServletResponse response) {
+	}
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+	/**
+	 * Attempt to fetch the users usages.
+	 * 
+	 * @param response
+	 */
+	private void go(HttpServletResponse response) {
 
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out;
-        try {
-            out = response.getWriter();
-            AccountProcessor ap = new AccountProcessor(out, username, password);
-            ap.go();
-        } catch (IOException e) {
-            log.error(e);
-        }
+		response.setContentType("application/json; charset=UTF-8");
+		PrintWriter out;
 
-    }
+		try {
+			out = response.getWriter();
+
+			if (username == null || password == null) {
+				throw new ThreeException("No username/password specified.");
+			}
+
+			AccountProcessor ap = new AccountProcessor(out, username, password);
+			ap.go();
+		} catch (IOException e) {
+			log.error(e);
+		} catch (ThreeException e) {
+			log.error(e);
+		}
+
+	}
+
+	/**
+	 * Handle POST requests
+	 */
+	public void doPost(HttpServletRequest request, HttpServletResponse response) {
+
+		username = request.getParameter("username");
+		password = request.getParameter("password");
+
+		go(response);
+	}
 
 }

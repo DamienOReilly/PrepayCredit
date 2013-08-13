@@ -28,4 +28,5 @@
     <color name="red">#ff3300</color>
     <color name="light_gray">#c0c0c0</color>
     <color name="my3_text">#ff3d4250</color>
+    <color name="layout_background">#efefef</color>
 </resources>

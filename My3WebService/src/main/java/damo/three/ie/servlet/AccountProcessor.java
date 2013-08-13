@@ -45,262 +45,262 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//TODO: This and the android app do almost the same thing here. Would like to have a common lib that both will share.
 class AccountProcessor {
 
-    public static final String MY3_URL = "https://sso.three.ie/mylogin/?service=https%3A%2F%2Fmy3account.three.ie%2FThreePortal%2Fappmanager%2FThree%2FMy3ROI%3F_pageLabel%3DP33403896361331912377205%26_nfpb%3Dtrue%26resource=portlet";
-    private static final String MY3_USAGE_PAGE = "https://my3account.three.ie/My_account_balance";
-    private static final String MY3_TOKEN_PAGE = "https://my3account.three.ie/ThreePortal/appmanager/Three/My3ROI?_pageLabel=P33403896361331912377205&_nfpb=true&resource=portlet&ticket=ST-";
-    private static final String LOGIN_TOKEN_REGEX = ".*<input type=\"hidden\" name=\"lt\" value=\"(LT-.*)\" />.*";
-    private static final String LOGGED_IN_TOKEN_REGEX = ".*ticket=ST-(.*)';.*";
-    private static final String OUT_OF_BUNDLE_REGEX = ".*Out-of-allowance data used since(.*)</p>.*";
+	private static final Logger log = Logger.getLogger(AccountProcessor.class
+			.getName());
 
-    private static final Logger log = Logger.getLogger(AccountProcessor.class.getName());
+	private HttpClient httpClient = null;
+	private String pageContent = null;
+	private final String username;
+	private String usernameObfuscated;
+	private final String password;
 
-    private HttpClient httpClient = null;
-    private String pageContent = null;
-    private final String username;
-    private String usernameObfuscated;
-    private final String password;
+	private final PrintWriter out;
 
-    private final PrintWriter out;
+	public AccountProcessor(final PrintWriter out, final String username,
+			final String password) {
 
-    public AccountProcessor(final PrintWriter out, final String username,
-                            final String password) {
+		this.out = out;
+		this.username = username;
+		// mask out the last 3 digits of the mobile number before logging. Valid
+		// number is at least 10 digits. We will only obfuscate this.
 
-        this.out = out;
-        this.username = username;
-        // mask out the last 3 digits of the mobile number before logging. Valid
-        // number is at least 10 digits. We will only obfuscate this.
+		if (username.length() >= 10) {
+			usernameObfuscated = username.substring(0, username.length() - 3)
+					+ "***";
+		}
+		this.password = password;
 
-        if (username.length() >= 10) {
-            usernameObfuscated = username.substring(0, username.length() - 3)
-                    + "***";
-        }
-        this.password = password;
+	}
 
-    }
+	/**
+	 * Let's kick this thing off
+	 */
+	public void go() {
 
-    /**
-     * Let's kick this thing off
-     */
-    public void go() {
+		try {
 
-        try {
+			log.info("User " + usernameObfuscated
+					+ " requesting usage information.");
 
-            log.info("User " + usernameObfuscated
-                    + " requesting usage information.");
+			this.httpClient = new ThreeHttpClient().getHttpClient();
 
-            this.httpClient = new ThreeHttpClient().getHttpClient();
+			pageContent = new ProcessRequest(httpClient, Constants.MY3_URL)
+					.process();
 
-            pageContent = new ProcessRequest(httpClient, MY3_URL).process();
+			// Check if this brought us to the login page.., if so, then login.
+			// Sometimes when using my3 on gsm, we aren't asked for login. Seems
+			// to be some server side session, as its not handled my cookies
+			// anyway.
+			Pattern p1 = Pattern.compile(Constants.LOGIN_TOKEN_REGEX,
+					Pattern.DOTALL);
+			Matcher m1 = p1.matcher(pageContent);
 
-            // Check if this brought us to the login page.., if so, then login.
-            // Sometimes when using my3 on gsm, we aren't asked for login. Seems
-            // to be some server side session, as its not handled my cookies
-            // anyway.
-            Pattern p1 = Pattern.compile(LOGIN_TOKEN_REGEX, Pattern.DOTALL);
-            Matcher m1 = p1.matcher(pageContent);
+			// If we retrieved a login-token, attempt to submit login
+			// credentials
+			if (m1.matches()) {
 
-            // If we retrieved a login-token, attempt to submit login
-            // credentials
-            if (m1.matches()) {
+				pageContent = new ProcessRequest(httpClient,
+						getNameValuePair(m1.group(1))).process();
 
-                pageContent = new ProcessRequest(httpClient,
-                        getNameValuePair(m1.group(1))).process();
+				if (pageContent.contains("Sorry, you've entered an invalid")) {
 
-                if (pageContent.contains("Sorry, you've entered an invalid")) {
+					throw new ThreeException(
+							"Invalid 3 mobile number or password.");
+				} else if (pageContent
+						.contains("You have entered your login details incorrectly too many times")) {
+					throw new ThreeException(
+							"Account is temporarily disabled due to too many incorrect logins. Please try again later.");
+				}
 
-                    throw new ThreeException(
-                            "Invalid 3 mobile number or password.");
-                } else if (pageContent
-                        .contains("You have entered your login details incorrectly too many times")) {
-                    throw new ThreeException(
-                            "Account is temporarily disabled due to too many incorrect logins. Please try again later.");
-                }
+				acceptToken();
+				/**
+				 * Otherwise check if we are already logged in Sometimes when on
+				 * GSM, it auto logs you in and you get sent to to Page with ST
+				 * token.
+				 */
+			} else if (pageContent.contains("Login successful.")) {
 
-                acceptToken();
-                /**
-                 * Otherwise check if we are already logged in Sometimes when on
-                 * GSM, it auto logs you in and you get sent to to Page with ST
-                 * token.
-                 */
-            } else if (pageContent.contains("Login successful.")) {
+				acceptToken();
 
-                acceptToken();
+			} else {
+				throw new ThreeException(
+						"Error logging in. Unexpected response from server.");
+			}
 
-            } else {
-                throw new ThreeException(
-                        "Error logging in. Unexpected response from server.");
-            }
+		} catch (Exception e) {
+			echoException(e);
 
-        } catch (Exception e) {
-            echoException(e);
+		} finally {
 
-        } finally {
+			if (httpClient != null) {
+				httpClient.getConnectionManager().shutdown();
+			}
+		}
 
-            if (httpClient != null) {
-                httpClient.getConnectionManager().shutdown();
-            }
-        }
+	}
 
-    }
+	/**
+	 * Accept token that is needed to be submitted in POST data to login.
+	 * 
+	 * @throws ThreeException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws JSONException
+	 */
+	private void acceptToken() throws ThreeException, IOException,
+			ParseException, JSONException {
+		Pattern p1 = Pattern.compile(Constants.LOGGED_IN_TOKEN_REGEX,
+				Pattern.DOTALL);
+		Matcher m1 = p1.matcher(pageContent);
 
-    /**
-     * Accept token that is needed to be submitted in POST data to login.
-     *
-     * @throws ThreeException
-     * @throws IOException
-     * @throws ParseException
-     * @throws JSONException
-     */
-    private void acceptToken() throws ThreeException, IOException,
-            ParseException, JSONException {
-        Pattern p1 = Pattern.compile(LOGGED_IN_TOKEN_REGEX, Pattern.DOTALL);
-        Matcher m1 = p1.matcher(pageContent);
+		if (m1.matches()) {
+			pageContent = new ProcessRequest(httpClient,
+					Constants.MY3_TOKEN_PAGE + m1.group(1)).process();
 
-        if (m1.matches()) {
-            pageContent = new ProcessRequest(httpClient, MY3_TOKEN_PAGE
-                    + m1.group(1)).process();
+			my3FetchUsage();
 
-            my3FetchUsage();
+		} else {
+			throw new ThreeException(
+					"Error reading token from login procedure.");
+		}
+	}
 
-        } else {
-            throw new ThreeException(
-                    "Error reading token from login procedure.");
-        }
-    }
+	/**
+	 * Fetch the usage from the usage page.
+	 * 
+	 * @throws ThreeException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	private void my3FetchUsage() throws ThreeException, IOException,
+			JSONException {
 
-    /**
-     * Fetch the usage from the usage page.
-     *
-     * @throws ThreeException
-     * @throws IOException
-     * @throws JSONException
-     */
-    private void my3FetchUsage() throws ThreeException, IOException,
-            JSONException {
+		if (pageContent.contains("Welcome back.")) {
 
-        if (pageContent.contains("Welcome back.")) {
+			pageContent = new ProcessRequest(httpClient,
+					Constants.MY3_USAGE_PAGE).process();
+			my3ParseUsage();
 
-            pageContent = new ProcessRequest(httpClient, MY3_USAGE_PAGE)
-                    .process();
-            my3ParseUsage();
+		} else {
+			throw new ThreeException(
+					"Error logging in. Unexpected response from server.");
+		}
 
-        } else {
-            throw new ThreeException(
-                    "Error logging in. Unexpected response from server.");
-        }
+	}
 
-    }
+	/**
+	 * Clean/Scrape/Parse the usages. Expose as JSON format.
+	 * 
+	 * @throws JSONException
+	 */
+	private void my3ParseUsage() throws JSONException {
+		// The HTML on my3 is pig-ugly, so we will use JSoup to
+		// clean and parse it.
 
-    /**
-     * Clean/Scrape/Parse the usages. Expose as JSON format.
-     *
-     * @throws JSONException
-     */
-    private void my3ParseUsage() throws JSONException {
-        // The HTML on my3 is pig-ugly, so we will use JSoup to
-        // clean and parse it.
+		Document doc = Jsoup.parse(pageContent);
+		HtmlUtilities.removeComments(doc);
 
-        Document doc = Jsoup.parse(pageContent);
-        HtmlUtilities.removeComments(doc);
+		Elements elements = doc.getElementsByTag("table");
 
-        Elements elements = doc.getElementsByTag("table");
+		// The My3WebService will also return usages as JSON. This is a common
+		// format that the app and webservice will use.
+		JSONArray jsonArray = new JSONArray();
 
-        // The My3WebService will also return usages as JSON. This is a common
-        // format that the app and webservice will use.
-        JSONArray jsonArray = new JSONArray();
+		// three don't have a sub label for the 3-to-3 calls.. feck them!
+		boolean three2threeCallsBug = false;
 
-        // three don't have a sub label for the 3-to-3 calls.. feck them!
-        boolean three2threeCallsBug = false;
+		for (Element element : elements) {
 
-        for (Element element : elements) {
+			for (Element subelement : element.select("tbody > tr")) {
 
-            for (Element subelement : element.select("tbody > tr")) {
+				if ((subelement.text().contains("3 to 3 Calls"))
+						&& (subelement.text().contains("Valid until")))
+					three2threeCallsBug = true;
 
-                if ((subelement.text().contains("3 to 3 Calls"))
-                        && (subelement.text().contains("Valid until")))
-                    three2threeCallsBug = true;
+				Elements subsubelements = subelement.select("td");
 
-                Elements subsubelements = subelement.select("td");
+				if (subsubelements.size() == 3) {
 
-                if (subsubelements.size() == 3) {
+					// skip the "total" entries
+					if (subsubelements.select("td").get(0).text()
+							.contains("Total")) {
+						continue;
+					}
 
-                    // skip the "total" entries
-                    if (subsubelements.select("td").get(0).text()
-                            .contains("Total")) {
-                        continue;
-                    }
+					JSONObject currentItem = new JSONObject();
 
-                    JSONObject currentItem = new JSONObject();
+					if (three2threeCallsBug) {
+						currentItem.put("item", "3 to 3 Calls");
+						three2threeCallsBug = false;
+					} else {
+						// Get rid of that "non-breaking space" character if it
+						// exists
+						String titleToClean = subsubelements.select("td")
+								.get(0).text().replace("\u00a0", "").trim();
+						currentItem.put("item", titleToClean);
+					}
 
-                    if (three2threeCallsBug) {
-                        currentItem.put("item", "3 to 3 Calls");
-                        three2threeCallsBug = false;
-                    } else {
-                        // Get rid of that "non-breaking space" character if it
-                        // exists
-                        String titleToClean = subsubelements.select("td")
-                                .get(0).text().replace("\u00a0", "").trim();
-                        currentItem.put("item", titleToClean);
-                    }
+					currentItem.put("value1", subsubelements.select("td")
+							.get(1).text());
+					currentItem.put("value2", subsubelements.select("td")
+							.get(2).text());
 
-                    currentItem.put("value1", subsubelements.select("td")
-                            .get(1).text());
-                    currentItem.put("value2", subsubelements.select("td")
-                            .get(2).text());
+					// Out of Bundle charges has an extra property
+					if (currentItem.getString("item").equals("Internet")) {
 
-                    // Out of Bundle charges has an extra property
-                    if (currentItem.getString("item").equals("Internet")) {
+						Pattern p1 = Pattern.compile(
+								Constants.OUT_OF_BUNDLE_REGEX, Pattern.DOTALL);
+						Matcher m1 = p1.matcher(pageContent);
 
-                        Pattern p1 = Pattern.compile(OUT_OF_BUNDLE_REGEX,
-                                Pattern.DOTALL);
-                        Matcher m1 = p1.matcher(pageContent);
+						if (m1.matches()) {
+							currentItem.put("value3", m1.group(1));
+						}
 
-                        if (m1.matches()) {
-                            currentItem.put("value3", m1.group(1));
-                        }
+					}
+					jsonArray.put(currentItem);
+				}
+			}
 
-                    }
-                    jsonArray.put(currentItem);
-                }
-            }
+			// reset the 3-to-3 call bug flag for next {@link Element}
+			if (three2threeCallsBug) {
+				three2threeCallsBug = false;
+			}
 
-            // reset the 3-to-3 call bug flag for next {@link Element}
-            if (three2threeCallsBug) {
-                three2threeCallsBug = false;
-            }
+		}
 
-        }
+		out.print(jsonArray.toString());
+	}
 
-        out.print(jsonArray.toString());
-    }
+	/**
+	 * Send back to client an exception. Log it also for offline investigation
+	 * if needed.
+	 * 
+	 * @param e
+	 *            Exception
+	 */
+	private void echoException(Exception e) {
+		out.print("Exception[" + e.getLocalizedMessage() + "]");
+		log.error("User " + usernameObfuscated + " had problem.");
+		log.error(e);
+	}
 
-    /**
-     * Send back to client an exception. Log it also for offline investigation
-     * if needed.
-     *
-     * @param e Exception
-     */
-    private void echoException(Exception e) {
-        out.print("Exception[" + e.getLocalizedMessage() + "]");
-        log.error("User " + usernameObfuscated + " had problem.");
-        log.error(e);
-    }
+	/**
+	 * Build a NameValuePair list for POST data.
+	 * 
+	 * @param token
+	 *            Extracted token from My3 page
+	 * @return NameValuePair
+	 */
+	List<NameValuePair> getNameValuePair(String token) {
+		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
+		nvp.add(new BasicNameValuePair("username", username));
+		nvp.add(new BasicNameValuePair("password", password));
+		nvp.add(new BasicNameValuePair("lt", token));
 
-    /**
-     * Build a NameValuePair list for POST data.
-     *
-     * @param token Extracted token from My3 page
-     * @return NameValuePair
-     */
-    List<NameValuePair> getNameValuePair(String token) {
-        List<NameValuePair> nvp = new ArrayList<NameValuePair>();
-        nvp.add(new BasicNameValuePair("username", username));
-        nvp.add(new BasicNameValuePair("password", password));
-        nvp.add(new BasicNameValuePair("lt", token));
+		return nvp;
 
-        return nvp;
-
-    }
+	}
 }

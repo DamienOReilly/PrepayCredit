@@ -3,6 +3,7 @@ bin
 gen
 gen-external-apklibs
 proguard
+proguard_logs
 lint.xml
 local.properties
 release.properties

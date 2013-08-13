@@ -28,7 +28,6 @@
     <string name="firstrun_dialog_title">My3 Prepay</string>
     <string name="firstrun_dialog_yes">Yes</string>
     <string name="firstrun_dialog_no">No</string>
-    <string name="refreshing">Refreshing…</string>
     <string name="settings">Settings</string>
     <string name="refresh">Refresh</string>
 </resources>

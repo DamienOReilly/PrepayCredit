@@ -102,7 +102,7 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
      * @throws JSONException
      */
     private void start() throws IOException,
-            ThreeException, ParseException, JSONException {
+            ThreeException, JSONException {
 
         // check if the user is using Wi-Fi. We won't use the intermediate
         // server if the user is on Wi-Fi. Direct to my3account.three.ie should

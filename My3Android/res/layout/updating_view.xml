@@ -25,27 +25,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true">
+                android:layout_centerVertical="true"
+                android:background="@color/layout_background">
 
     <ProgressBar
         android:id="@+id/progressBarRefreshing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/loading_view_padding"
+        style="@style/Spinner"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_alignParentEnd="false"
         android:layout_alignParentStart="false"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
-
-    <TextView
-        android:id="@+id/textViewRefreshing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/refreshing"
-        android:textColor="@color/dark_blue"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false"
-        android:layout_toRightOf="@+id/progressBarRefreshing"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>

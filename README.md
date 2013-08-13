@@ -1,4 +1,5 @@
 # My3 Prepay for Android
+[![Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=damo.three.ie)
 
 Note these applications are for 3 Ireland Prepay users only.
 This application will fetch and display your My3 3Pay usage information. Usage information is grouped and sorted. This application will work when you are on 3's GSM network and also when on Wi-Fi.
@@ -8,8 +9,6 @@ You need your SIM Serial to register with My3. If you need your Sim Serial (ICCI
 This application will use an intermediate server to speed up usage retrieval by default. This is most noticeable when you are on a 2G connection, and to some extend a 3G connection. The intermediate server is secure.damienoreilly.org and traffic is encrypted over TLS. The intermediate server is not used when you are on Wi-Fi,
 You can set whether you want to use the intermediate server or connect directly to my3account.three.ie from settings.
 This application, nor its author is not affiliated with Hutchison 3G Ireland.
-
-https://play.google.com/store/apps/details?id=damo.three.ie
 
 # Build with Maven
 
@@ -59,4 +58,8 @@ along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
   
 * Joda Time  
   http://joda-time.sourceforge.net  
-  Apache License v2: http://joda-time.sourceforge.net/license.html  
+  Apache License v2: http://joda-time.sourceforge.net/license.html
+
+* Apache HttpClient
+  http://hc.apache.org/httpcomponents-client-ga/index.html
+  Apache License v2: http://joda-time.sourceforge.net/license.html

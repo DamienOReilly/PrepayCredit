@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>damo.three.ie.my3</groupId>
@@ -13,11 +12,22 @@
     <url>http://damienoreilly.com</url>
     <inceptionYear>2013</inceptionYear>
 
+    <scm>
+        <connection>scm:git:git://github.com/DamienOReilly/My3Usage.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/DamienOReilly/My3Usage.git</developerConnection>
+        <url>https://github.com/DamienOReilly/My3Usage</url>
+      <tag>My3-Prepay</tag>
+  </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/DamienOReilly/My3Usage/issues</url>
+    </issueManagement>
+
     <modules>
         <module>My3Android</module>
         <module>My3WebService</module>
     </modules>
-
 
     <developers>
         <developer>
@@ -32,10 +42,15 @@
         </developer>
     </developers>
 
+    <organization>
+        <name>Damien O'Reilly</name>
+        <url>http://damienoreilly.org</url>
+    </organization>
+
     <licenses>
         <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>GNU General Public License v3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -67,7 +82,7 @@
                         <target>${java.version}</target>
                         <showWarnings>true</showWarnings>
                         <compilerArguments>
-                            <Xlint/>
+                            <Xlint />
                         </compilerArguments>
                     </configuration>
                 </plugin>

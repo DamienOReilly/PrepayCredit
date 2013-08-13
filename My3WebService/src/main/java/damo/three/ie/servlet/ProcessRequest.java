@@ -23,6 +23,7 @@
 package damo.three.ie.servlet;
 
 import damo.three.ie.servlet.util.HtmlUtilities;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -65,7 +66,7 @@ class ProcessRequest {
     public ProcessRequest(HttpClient httpClient,
                           List<NameValuePair> nvp) throws UnsupportedEncodingException {
         this.httpClient = httpClient;
-        this.httpUriRequest = new HttpPost(AccountProcessor.MY3_URL);
+        this.httpUriRequest = new HttpPost(Constants.MY3_URL);
         ((HttpEntityEnclosingRequestBase) this.httpUriRequest)
                 .setEntity(new UrlEncodedFormEntity(nvp, "utf-8"));
 

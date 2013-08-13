@@ -1,33 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ This file is part of My3 Prepay for Android
-  ~
-  ~ Copyright © 2013  Damien O'Reilly
-  ~
-  ~ My3 Prepay for Android is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ My3 Prepay for Android is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
-  ~
-  ~ Report bugs or new features at: https://github.com/DamienOReilly/My3Usage
-  ~ Contact the author at:          damienreilly@gmail.com
-  -->
+<!-- ~ This file is part of My3 Prepay for Android ~ ~ Copyright © 2013 Damien 
+	O'Reilly ~ ~ My3 Prepay for Android is free software: you can redistribute 
+	it and/or modify ~ it under the terms of the GNU General Public License as 
+	published by ~ the Free Software Foundation, either version 3 of the License, 
+	or ~ (at your option) any later version. ~ ~ My3 Prepay for Android is distributed 
+	in the hope that it will be useful, ~ but WITHOUT ANY WARRANTY; without even 
+	the implied warranty of ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	See the ~ GNU General Public License for more details. ~ ~ You should have 
+	received a copy of the GNU General Public License ~ along with My3 Prepay 
+	for Android. If not, see <http://www.gnu.org/licenses />. ~ ~ Report bugs 
+	or new features at: https://github.com/DamienOReilly/My3Usage ~ Contact the 
+	author at: damienreilly@gmail.com -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>damo.three.ie.my3webservice</groupId>
-	<artifactId>my3webservice</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<artifactId>My3WebService</artifactId>
 	<name>My3 WebService</name>
 	<packaging>war</packaging>
 
@@ -69,12 +59,36 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<!-- localhost profile -->
+		<profile>
+			<id>tomcat-localhost</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<tomcat-server>localhost</tomcat-server>
+				<tomcat-url>http://localhost:8080/manager</tomcat-url>
+			</properties>
+		</profile>
+
+		<!-- secure.damienoreilly.org specific profile -->
+		<!-- NOTE: we need to include our cert in a keystore to upload as tomcat7 by default don't trust certs from Entrust.net it seems. -->
+		<!-- mvn clean package tomcat7:redeploy -P tomcat-dor -Djavax.net.ssl.trustStore=damienoreilly.org.keystore -Djavax.net.ssl.trustStorePassword=damopass -->
+		<profile>
+			<id>tomcat-dor</id>
+			<properties>
+				<tomcat-server>my3webservice-server</tomcat-server>
+				<tomcat-url>https://secure.damienoreilly.org/manager/text</tomcat-url>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -88,6 +102,17 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<server>${tomcat-server}</server>
+					<url>${tomcat-url}</url>
+					<path>/My3WebService</path>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+	<version>0.8-SNAPSHOT</version>
 </project>
