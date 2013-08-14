@@ -48,14 +48,10 @@ public class ThreeHttpClient {
     }
 
     /**
-     * Singleton for our HttpClient
+     * Singleton for our HttpClient - on demand!
      *
      * @param context Application context
      * @return ThreeHttpClient a reference to our HttpClient singleton
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     * @throws KeyStoreException
-     * @throws IOException
      */
     public static ThreeHttpClient getInstance(Context context) {
 
@@ -64,7 +60,6 @@ public class ThreeHttpClient {
         }
 
         return threeHttpClient;
-
     }
 
     /**
@@ -81,6 +76,8 @@ public class ThreeHttpClient {
 
         final KeyStore trusted = KeyStore.getInstance("BKS");
 
+        // I included a BKS keystore with secure.damienoreilly.org's cert and my3account.three.ie's Root Cert
+        // some older android devices don't have these certs in their trust list.
         final InputStream in = context.getResources()
                 .openRawResource(R.raw.my3);
         try {

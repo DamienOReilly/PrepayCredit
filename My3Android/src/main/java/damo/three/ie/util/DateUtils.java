@@ -28,6 +28,8 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DateUtils {
 
@@ -91,21 +93,36 @@ public class DateUtils {
 
     /**
      * Converts an Out of Bundle date as string to {@link Long}
+     * Comes in as '20<sup>th</sup> June 2013'
+     * My3 can give us months named with first 4 chars. E.g. 'August' is displayed on the usage page as 'Augu' !!
+     * Since this doesn't comply with any Date format parser, convert it to 3 chars that is accepted by the
+     * 'MMM' pattern.
      *
      * @param outOfBundleDate Out of Bundle date
      * @return Out of bundle date as {@link Long}
      */
     public static Long parseOutOfBundleDate(String outOfBundleDate) {
 
-        // Comes in as 20<sup>th</sup> June 2013
+        //Strip off HTML tags and other stuff
         String cleaned = outOfBundleDate.replace("<sup>", "")
-                .replace("</sup>", "").replaceAll("(?:st|nd|rd|th)", "").trim();
+                .replace("</sup>", "").replace("Expires ", "").replaceAll("(?:st|nd|rd|th)", "").trim();
 
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(Locale.UK);
-        DateTime dt = formatter.parseDateTime(cleaned.replace("Expires ", ""));
+        Pattern p = Pattern.compile("(\\d+)\\s(.*)\\s(\\d{4})");
+        Matcher m = p.matcher(cleaned);
+
+        StringBuilder cleanedDate = new StringBuilder();
+        while (m.find()) {
+            cleanedDate.append(m.group(1));
+            cleanedDate.append(' ');
+            cleanedDate.append(m.group(2).substring(0, 3));
+            cleanedDate.append(' ');
+            cleanedDate.append(m.group(3));
+        }
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.UK);
+        DateTime dt = formatter.parseDateTime(cleanedDate.toString());
 
         return dt.getMillis();
-
     }
 
 }

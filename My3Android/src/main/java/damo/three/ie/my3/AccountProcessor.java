@@ -36,6 +36,7 @@ import damo.three.ie.util.DateUtils;
 import damo.three.ie.util.HtmlUtilities;
 import damo.three.ie.util.JSONUtils;
 import damo.three.ie.util.ThreeException;
+import org.acra.ACRA;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -98,7 +99,6 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
      *
      * @throws IOException
      * @throws ThreeException
-     * @throws ParseException
      * @throws JSONException
      */
     private void start() throws IOException,
@@ -177,8 +177,7 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
                 acceptToken();
 
             } else {
-                throw new ThreeException(
-                        "Error logging in. Unexpected response from server.");
+                errorFetchingUsage(this.getClass().getCanonicalName() + ":start()");
             }
         }
     }
@@ -203,8 +202,7 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
             my3FetchUsage();
 
         } else {
-            throw new ThreeException(
-                    "Error reading token from login procedure.");
+            errorFetchingUsage(this.getClass().getCanonicalName() + ":acceptToken()");
         }
     }
 
@@ -226,10 +224,26 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
             my3ParseUsage();
 
         } else {
-            throw new ThreeException(
-                    "Error logging in. Unexpected response from server.");
+            errorFetchingUsage(this.getClass().getCanonicalName() + ":my3FetchUsage()");
         }
 
+    }
+
+    /**
+     * There was some problem fetching the usage, Alert the user, and log report for
+     * unexpected application state. Might be useful for debugging.
+     */
+    private void errorFetchingUsage(String caller) throws ThreeException {
+
+        String msg = "Error logging in. Unexpected response from server.";
+
+        // There was some problem logging in
+        ACRA.getErrorReporter().putCustomData("CALLER", caller);
+        ACRA.getErrorReporter().putCustomData("CURRENT_PAGE_CONTENT", pageContent);
+        ACRA.getErrorReporter().handleSilentException(new ThreeException(msg));
+
+        //still let the user know we couldn't fetch the usage.
+        throw new ThreeException(msg);
     }
 
     /**

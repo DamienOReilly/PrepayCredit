@@ -34,14 +34,17 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+
 
     <application
+        android:name=".My3Application"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:logo="@drawable/ic_actionbar_icon"
         android:label="@string/app_name">
         <activity
-            android:name="damo.three.ie.activity.My3Activity"
+            android:name=".activity.My3Activity"
             android:label="@string/app_name"
             android:theme="@style/ActionBarCustom">
             <intent-filter>
@@ -51,8 +54,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="damo.three.ie.activity.SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:theme="@style/ActionBarCustom"/>
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"/>
     </application>
 
 </manifest>

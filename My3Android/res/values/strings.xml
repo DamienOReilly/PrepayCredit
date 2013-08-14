@@ -30,4 +30,15 @@
     <string name="firstrun_dialog_no">No</string>
     <string name="settings">Settings</string>
     <string name="refresh">Refresh</string>
+
+    <!-- ACRA specific -->
+    <string name="crash_toast_text">Oops! My3 Prepay has crashed!</string>
+
+    <string name="crash_dialog_title">My3 Prepay crashed</string>
+    <string name="crash_dialog_text">An unexpected error occurred forcing the
+        application to stop. Please help me fix this by sending me an error report.
+        All you have to do is click OK.
+    </string>
+    <string name="crash_dialog_comment_prompt">You can add any further information you may want below:</string>
+    <string name="crash_dialog_ok_toast">Cheers !</string>
 </resources>

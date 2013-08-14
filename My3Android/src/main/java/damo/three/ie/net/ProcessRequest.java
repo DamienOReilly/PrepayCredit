@@ -23,6 +23,7 @@
 package damo.three.ie.net;
 
 import damo.three.ie.util.HtmlUtilities;
+import org.acra.ACRA;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -92,6 +93,10 @@ public class ProcessRequest {
             httpEntity.consumeContent();
 
 
+        // add current page content crash report logger incase application falls over. This is useful for
+        // debugging logging in or parsing problems.
+        // These pages don't contain the users credentials or other personal/sensitive information.
+        ACRA.getErrorReporter().putCustomData("CURRENT_PAGE_CONTENT", pageContent);
         return pageContent;
 
     }
