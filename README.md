@@ -1,5 +1,7 @@
 # My3 Prepay for Android
 [![Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=damo.three.ie)
+![ScreenShot](https://raw.github.com/DamienOReilly/My3Usage/master/Other/Images/feature_1024x500.png)
+
 
 Note these applications are for 3 Ireland Prepay users only.
 
