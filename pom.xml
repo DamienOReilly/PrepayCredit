@@ -1,32 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This file is part of Prepay Credit for Android
+  ~
+  ~ Copyright © 2013  Damien O'Reilly
+  ~
+  ~ Prepay Credit for Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Prepay Credit for Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Report bugs or new features at: https://github.com/DamienOReilly/PrepayCredit
+  ~ Contact the author at:          damienreilly@gmail.com
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>damo.three.ie.my3</groupId>
-    <artifactId>my3-parent</artifactId>
-    <version>0.8</version>
+    <groupId>damo.three.ie.prepaycredit</groupId>
+    <artifactId>prepaycredit-parent</artifactId>
+    <version>0.9</version>
     <packaging>pom</packaging>
 
-    <name>My3 Prepay</name>
-    <description>My3 Prepay Android application and accompanying J EE WebService.</description>
+    <name>Prepay Credit</name>
+    <description>Prepay Credit Android application and accompanying J EE WebService. Works with 3 Ireland Prepay accounts.</description>
     <url>http://damienoreilly.com</url>
     <inceptionYear>2013</inceptionYear>
 
     <scm>
-        <connection>scm:git:git://github.com/DamienOReilly/My3Usage.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/DamienOReilly/My3Usage.git</developerConnection>
-        <url>https://github.com/DamienOReilly/My3Usage</url>
-      <tag>My3-Prepay</tag>
+        <connection>scm:git:git://github.com/DamienOReilly/PrepayCredit.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/DamienOReilly/PrepayCredit.git</developerConnection>
+        <url>https://github.com/DamienOReilly/PrepayCredit</url>
+        <tag>Prepay Credit</tag>
   </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/DamienOReilly/My3Usage/issues</url>
+        <url>https://github.com/DamienOReilly/PrepayCredit/issues</url>
     </issueManagement>
 
     <modules>
-        <module>My3Android</module>
-        <module>My3WebService</module>
+        <module>PrepayCreditAndroid</module>
+        <module>PrepayCreditWebService</module>
     </modules>
 
     <developers>
