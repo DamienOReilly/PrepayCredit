@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of Prepay Credit for Android
+  ~
+  ~ Copyright © 2013  Damien O'Reilly
+  ~
+  ~ Prepay Credit for Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Prepay Credit for Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Report bugs or new features at: https://github.com/DamienOReilly/PrepayCredit
+  ~ Contact the author at:          damienreilly@gmail.com
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="damo.three.ie"
+          android:installLocation="auto"
+          android:versionCode="9"
+          android:versionName="0.9">
+
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="18"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+        android:name=".PrepayCreditApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:logo="@drawable/ic_actionbar_icon"
+        android:label="@string/app_name">
+
+        <activity
+            android:name=".activity.PrepayCreditActivity"
+            android:label="@string/app_name"
+            android:theme="@style/ActionBarCustom">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:theme="@style/ActionBarCustom"/>
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"/>
+        <activity
+            android:name=".activity.InternetExpirationActivity"
+            android:theme="@android:style/Theme.Dialog"
+            android:excludeFromRecents="true"/>
+        <activity
+            android:name=".activity.AboutActivity"
+            android:label="@string/about_activity_title"
+            android:theme="@style/ActionBarCustom"/>
+
+        <receiver
+            android:name=".prepay.UsageNotifier"
+            android:enabled="true">
+        </receiver>
+        <receiver
+            android:name=".prepay.PrepayAlarmManager"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

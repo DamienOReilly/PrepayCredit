@@ -1,9 +1,10 @@
-# My3 Prepay for Android
-[![Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=damo.three.ie)
-![ScreenShot](https://raw.github.com/DamienOReilly/My3Usage/master/Other/Images/feature_1024x500.png)
+# Prepay Credit for Android
+[![Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=damo.three.ie)
+[![F-Droid](https://f-droid.org/wiki/images/c/c4/F-Droid-button_available-on.png)](https://f-droid.org/repository/browse/?fdid=damo.three.ie)
+[![Build Status](https://drone.io/github.com/DamienOReilly/PrepayCredit/status.png)](https://drone.io/github.com/DamienOReilly/PrepayCredit/latest)
 
-
-Note these applications are for 3 Ireland Prepay users only.
+**NOTE:** This application, nor its author is not affiliated with Hutchison 3G Ireland.
+**NOTE:** These applications are for 3 Ireland Prepay users only.
 
 This application will fetch and display your My3 3Pay usage information. Usage information is grouped and sorted. This application will work when you are on 3's GSM network and also when on Wi-Fi.
 Please note, https://my3account.three.ie is AWFUL slow. It can have a knock on effect on this application.
@@ -12,9 +13,6 @@ This application needs your My3 username/password. You can register at https://m
 You need your SIM Serial to register with My3. If you need your Sim Serial (ICCID), hit refresh once, and the application will show it for you, if you have no login details entered.
 This application will use an intermediate server to speed up usage retrieval by default. This is most noticeable when you are on a 2G connection, and to some extend a 3G connection. The intermediate server is secure.damienoreilly.org and traffic is encrypted over TLS. The intermediate server is not used when you are on Wi-Fi,
 You can set whether you want to use the intermediate server or connect directly to my3account.three.ie from settings.
-
-
-This application, nor its author is not affiliated with Hutchison 3G Ireland.
 
 # Build with Maven
 
@@ -32,22 +30,22 @@ This application, nor its author is not affiliated with Hutchison 3G Ireland.
 Fork and do a Pull Request. If you have nice ideas, I can merge them in.
 
 # Licenses
-My3 Prepay for Android is licensed under the GPLv3+.  
+Prepay Credit for Android is licensed under the GPLv3+.
 The file COPYING includes the full license text.
 
 ## Details
-My3 Prepay for Android is free software: you can redistribute it and/or modify
+Prepay Credit for Android is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-My3 Prepay for Android is distributed in the hope that it will be useful,
+Prepay Credit for Android is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
+along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Libraries
 * ActionBarSherlock  
@@ -68,8 +66,16 @@ along with My3 Prepay for Android.  If not, see <http://www.gnu.org/licenses/>.
 
 * Apache HttpClient  
   http://hc.apache.org/httpcomponents-client-ga/index.html  
-  Apache License v2: http://joda-time.sourceforge.net/license.html
+  Apache License v2: http://www.apache.org/licenses/LICENSE-2.0.txt
 
 * ACRA  
   http://acra.ch/  
-  Apache License v2: http://joda-time.sourceforge.net/license.html
+  Apache License v2: https://github.com/ACRA/acra/blob/master/LICENSE
+
+* Phone handset logo
+  Creative Commons Attribution 3.0
+  http://creativecommons.org/licenses/by/3.0/legalcode
+
+* Phone handset logo
+  Creative Commons Attribution 3.0
+  http://creativecommons.org/licenses/by/3.0/legalcode
