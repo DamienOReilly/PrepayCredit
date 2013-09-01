@@ -53,6 +53,7 @@ public class AccountProcessorFragment extends SherlockFragment {
     private Boolean working = false;
     private List<BaseItem> items = null;
     private DateTime dateTimeNow = null;
+    private SharedPreferences sharedPref = null;
 
     /**
      * Callback interface through which the fragment will report the task's
@@ -81,6 +82,8 @@ public class AccountProcessorFragment extends SherlockFragment {
         }
 
         accountProcessorListener = (AccountProcessorListener) activity;
+        sharedPref = getSherlockActivity().getApplicationContext().getSharedPreferences(
+                "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
     }
 
     /**
@@ -90,8 +93,9 @@ public class AccountProcessorFragment extends SherlockFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-
+        /* prevents us holding onto an activity which has been destroyed. Should stop potential memory leak */
         accountProcessorListener = null;
+        sharedPref = null;
     }
 
     /**
@@ -153,26 +157,26 @@ public class AccountProcessorFragment extends SherlockFragment {
             }
             items = JSONUtils.jsonToBaseItems(usages);
         } catch (ParseException e) {
-            accountProcessorListener.onAccountUsageExceptionReceived(e.getLocalizedMessage());
             e.printStackTrace();
         } catch (JSONException e) {
-            accountProcessorListener.onAccountUsageExceptionReceived(e.getLocalizedMessage());
             e.printStackTrace();
         }
 
         dateTimeNow = new DateTime();
-        SharedPreferences sharedPref = getSherlockActivity().getApplicationContext().getSharedPreferences(
-                "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
-        boolean notificationsEnabled = sharedPref.getBoolean("notification", true);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putLong("last_refreshed_milliseconds", dateTimeNow.getMillis());
-        editor.putString("usage_info", usages.toString());
-        editor.commit();
+
+        boolean notificationsEnabled = false;
+        if (sharedPref != null) {
+            notificationsEnabled = sharedPref.getBoolean("notification", true);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong("last_refreshed_milliseconds", dateTimeNow.getMillis());
+            editor.putString("usage_info", usages.toString());
+            editor.commit();
+        }
 
         if (accountProcessorListener != null) {
             accountProcessorListener.onAccountUsageReceived();
+            registerAlarm(notificationsEnabled);
         }
-        registerAlarm(notificationsEnabled);
     }
 
     /**
