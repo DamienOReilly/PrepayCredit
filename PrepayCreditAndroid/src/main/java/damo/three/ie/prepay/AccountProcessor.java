@@ -332,6 +332,8 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray jsonArray) {
 
+        /* Don't report anything back if the user closed the app. Can cause NPE. */
+
         if (damn != null) {
             accountProcessorFragment.reportBackException(damn);
         } else {
