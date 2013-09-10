@@ -87,7 +87,8 @@
         <EditTextPreference
             android:key="acra.user.email"
             android:title="Include email address in reports"
-            android:summary="Include email address in reports if you want to help me with bugs"/>
+            android:summary="Include email address in reports if you want to help me with bugs"
+            android:inputType="textEmailAddress"/>
 
         <CheckBoxPreference
             android:key="acra.alwaysaccept"

@@ -24,7 +24,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Theme for the Sherlock ActionBar -->
-    <style name="ActionBarCustom" parent="Theme.Sherlock.Light">
+    <style name="ActionBarCustom" parent="Theme.Sherlock">
         <item name="android:actionBarStyle">@style/ActionBarCustom.ActionBarStyle</item>
         <item name="actionBarStyle">@style/ActionBarCustom.ActionBarStyle</item>
     </style>
