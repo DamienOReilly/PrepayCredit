@@ -174,6 +174,11 @@ public class AccountProcessorFragment extends SherlockFragment {
             editor.commit();
         }
 
+        /**
+         * Check if reference to parent activity is null, if it is, app was closed,
+         * and Activity wasn'r re-created. i.e. user manually closed the app while fetching
+         * data
+         **/
         if (accountProcessorListener != null) {
             accountProcessorListener.onAccountUsageReceived();
             registerAlarm(notificationsEnabled);
