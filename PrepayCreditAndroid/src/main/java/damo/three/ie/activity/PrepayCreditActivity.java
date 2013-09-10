@@ -25,14 +25,13 @@ package damo.three.ie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.DisplayMetrics;
+import android.view.*;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.*;
 import com.actionbarsherlock.app.ActionBar;
@@ -43,8 +42,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import damo.three.ie.R;
 import damo.three.ie.fragment.AccountProcessorFragment;
+import damo.three.ie.prepayusage.AllBaseItemsGroupedAndSorted;
 import damo.three.ie.prepayusage.BaseItem;
-import damo.three.ie.prepayusage.BaseItemsGroupedAndSorted;
 import damo.three.ie.prepayusage.OrganiseItems;
 import damo.three.ie.ui.InfoDialog;
 import damo.three.ie.ui.RegisterDialog;
@@ -56,6 +55,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -119,22 +120,24 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
                     .commitAllowingStateLoss(); /* consider that activity may be destroyed */
         }
 
-        // if we had already fetched usages, show them on the newly created
-        // activity
+        // if we had already fetched usages, show them on the newly created activity
         if (accountProcessorFragment.getItems() != null) {
             displayUsages(accountProcessorFragment.getItems());
             updateLastRefreshedTextView(DateUtils.formatDateTime(
                     accountProcessorFragment.getDateTime().getMillis()));
         }
-
-        // if screen was rotated and Activity was re-created while we were fetching
-        // usage info, then display loading screen now.
+        /**
+         * if screen was rotated and Activity was re-created while we were fetching
+         * usage info, then display loading screen now.
+         */
         if (accountProcessorFragment.isWorking()) {
             displayLoadingView(true);
             working = true;
         } else {
-            // create the view anyway, otherwise the loading screen never shows
-            // after a rotation, but don't show it yet.
+            /**
+             * create the view anyway, otherwise the loading screen never shows
+             * after a rotation, but don't show it yet.
+             */
             displayLoadingView(false);
         }
     }
@@ -149,19 +152,23 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
             showInfoDialog();
         }
 
-        // If previous usage info was persisted, show it, unless we are
-        // currently retrieving new usages.
-        // If we refreshed usages since opening app, then don't fall in
-        // here as we will get the usages from our AccountProcessorFragment
-        // in onCreate() instead.
+        /**
+         * If previous usage info was persisted, show it, unless we are
+         * currently retrieving new usages.
+         * If we refreshed usages since opening app, then don't fall in
+         * here as we will get the usages from our AccountProcessorFragment
+         * in onCreate() instead.
+         */
         if (!refreshDoneSinceLoadingPersistedData && !working) {
             loadPersistedUsages();
         }
+        /**
+         * refresh usage on startup ?
+         * check if we already refreshed. Activity is re-created each
+         * rotate, so checked persisted value we stored
+         * onSaveInstanceState()
+         */
 
-        // refresh usage on startup ?
-        // check if we already refreshed. Activity is re-created each
-        // rotate, so checked persisted value we stored
-        // onSaveInstanceState()
         if ((sharedPreferences.getBoolean("refresh", false))
                 && (!refreshedOnStart)) {
 
@@ -170,6 +177,9 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
         }
     }
 
+    /**
+     * Load usages if we have them persisted.
+     */
     private void loadPersistedUsages() {
         SharedPreferences sharedPref = getSharedPreferences(
                 "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
@@ -179,8 +189,7 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
             try {
                 List<BaseItem> baseItems = JSONUtils
                         .jsonToBaseItems(new JSONArray(usage));
-                // check array size in-case it was just an empty json
-                // string stored
+                // check array size in-case it was just an empty json string stored
                 if (baseItems.size() > 0) {
                     updateLastRefreshedTextView(DateUtils.formatDateTime(sharedPref.getLong(
                             "last_refreshed_milliseconds", 0L)));
@@ -207,21 +216,91 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
         lastRefreshed.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Activity is going down. Save data that we want to reload when the activity is re-created.
+     * @param outState State to be saved
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("refreshed_on_start", refreshedOnStart);
-        // signal to possibly re-load on rotate as onResume() is called each
-        // configuration change
+        // signal to possibly re-load on rotate as onResume() is called each configuration change
         outState.putBoolean("loaded_persisted_on_start", false);
     }
 
+    /**
+     * Setup the menu for the ActionBar. If there is no room for all menu icon's, they will
+     * either go to the overflow menu, or if on pre-honeycomb, the old menu.
+     * @param menu Menu
+     * @return boolean
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    /**
+     * Normally on Pre HoneyComb, overflow icons from ActionBar go into the old menu with
+     * grey icon with transparent background. However if device is rotated, icons can
+     * fit on the ActionBar. These should be white with a bit of opacity to match the
+     * other icons that always fit on the action bar. This situation needs to be handled via code.
+     * http://stackoverflow.com/a/12139512
+     *
+     * @param menu Menu
+     * @return boolean
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        MenuItem search = menu.findItem(R.id.menuAbout);
+        DisplayMetrics metrics = new DisplayMetrics();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        overrideGetSize(display, size);
+        display.getMetrics(metrics);
+        float logicalDensity = metrics.density;
+
+        int dp = (int) (size.x / logicalDensity + 0.5);
+
+        if (dp < 360) { // only two icons
+            search.setIcon(R.drawable.ic_action_action_help_pre_honeycomb);  // Show menu icon for pre-3.0 menu
+        } else {
+            search.setIcon(R.drawable.ic_action_action_help); // Show action bar icon for action bar
+        }
 
         return true;
+    }
+
+
+    /**
+     * Get display size in a compatible way from Android 2.1+ onwards
+     * http://stackoverflow.com/a/10660288
+     *
+     * @param display Dispplay
+     * @param outSize Point
+     */
+    @SuppressWarnings("deprecation")
+    private void overrideGetSize(Display display, Point outSize) {
+        try {
+            // test for new method to trigger exception
+            Class pointClass = Class.forName("android.graphics.Point");
+            Method newGetSize = Display.class.getMethod("getSize", new Class[]{pointClass});
+
+            // no exception, so new method is available, just use it
+            newGetSize.invoke(display, outSize);
+        } catch (NoSuchMethodException ex) {
+            // new method is not available, use the old depreciated ones
+            outSize.x = display.getWidth();
+            outSize.y = display.getHeight();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -235,9 +314,11 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
                 return true;
 
             case R.id.menuSettings:
-                // Needed as once off. If user enables refresh on start, refresh
-                // would happen when they close SettingsActivity as onResume() here
-                // is called as son as user closes SettingsActivity
+                /**
+                 * Needed as once off. If user enables refresh on start, refresh
+                 * would happen when they close SettingsActivity as onResume() here
+                 * is called as son as user closes SettingsActivity
+                 */
                 refreshedOnStart = true;
                 Intent settings = new Intent(this, SettingsActivity.class);
                 startActivity(settings);
@@ -420,16 +501,18 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
             baseUsageView.removeAllViews();
             baseUsageView.setVisibility(View.GONE);
 
-            List<BaseItemsGroupedAndSorted> baseItemsGroupedAndSorted = new OrganiseItems(
+            List<AllBaseItemsGroupedAndSorted> allBaseItemsGroupedAndSorted = new OrganiseItems(
                     usageItems).groupUsages();
 
-            if (baseItemsGroupedAndSorted != null) {
+            if (allBaseItemsGroupedAndSorted != null) {
 
-                for (BaseItemsGroupedAndSorted b : baseItemsGroupedAndSorted) {
+                for (AllBaseItemsGroupedAndSorted b : allBaseItemsGroupedAndSorted) {
 
-                    // check if usage is already expired (cached usages maybe no-longer
-                    // relevant if the user hasn't refreshed in some time).
-                    // TODO: should really clean up persisted cache if we find an expired entry.
+                    /**
+                     * check if usage is already expired (cached usages maybe no-longer
+                     * relevant if the user hasn't refreshed in some time).
+                     * TODO: should really clean up persisted cache if we find an expired entry.
+                     */
                     if (b.isNotExpired()) {
                         UsageView l = new UsageView(getBaseContext(), b);
                         baseUsageView.addView(l);
