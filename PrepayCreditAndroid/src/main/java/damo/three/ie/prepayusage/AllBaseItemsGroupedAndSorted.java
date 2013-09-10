@@ -22,6 +22,8 @@
 
 package damo.three.ie.prepayusage;
 
+import android.util.Log;
+import damo.three.ie.prepay.Constants;
 import damo.three.ie.prepayusage.items.Other;
 import damo.three.ie.prepayusage.items.OutOfBundle;
 import org.joda.time.DateTime;
@@ -29,18 +31,19 @@ import org.joda.time.Days;
 
 import java.util.List;
 
-public class BaseItemsGroupedAndSorted implements Comparable<BaseItemsGroupedAndSorted> {
+public class AllBaseItemsGroupedAndSorted implements Comparable<AllBaseItemsGroupedAndSorted> {
 
     private final List<BaseItem> baseItems;
-    private String groupName;
-    private GroupType groupType;
+    private String expireGroup;
+    private ExpireGroupType expireGroupType;
     private final DateTime dateTimeNow;
     private DateTime groupDateTime;
 
-    public BaseItemsGroupedAndSorted(List<BaseItem> baseItemCommons) {
 
+    public AllBaseItemsGroupedAndSorted(List<BaseItem> baseItemCommons) {
         this.baseItems = baseItemCommons;
-        dateTimeNow = new DateTime();
+        this.groupDateTime =
+                dateTimeNow = new DateTime();
         updateGroupName();
     }
 
@@ -49,23 +52,25 @@ public class BaseItemsGroupedAndSorted implements Comparable<BaseItemsGroupedAnd
      */
     private void updateGroupName() {
         String toProcess = baseItems.get(0).getValue1formatted();
+        Class clazz = baseItems.get(0).getClass();
+        Log.i(Constants.TAG, clazz.getName());
 
         // default for non-expirables, just a date in future, for Comparator reasons!
         // Wed Jan 01 2020 00:00:00 GMT+0000 (GMT Standard Time)
         groupDateTime = new DateTime(1577836800000L);
 
         if (baseItems.get(0) instanceof Other) {
-            groupName = "Other:";
-            groupType = GroupType.GOOD;
+            expireGroup = "Other:";
+            expireGroupType = ExpireGroupType.GOOD;
         } else if (baseItems.get(0) instanceof OutOfBundle) {
-            groupName = "Internet out-of-bundle charges!";
-            groupType = GroupType.BAD;
+            expireGroup = "Internet out-of-bundle charges!";
+            expireGroupType = ExpireGroupType.BAD;
         } else if (toProcess.equals("Won't expire")) {
-            groupName = "Won't expire";
-            groupType = GroupType.GOOD;
+            expireGroup = "Won't expire";
+            expireGroupType = ExpireGroupType.GOOD;
         } else if (toProcess.equals("Queued")) {
-            groupName = "Queued";
-            groupType = GroupType.GOOD;
+            expireGroup = "Queued";
+            expireGroupType = ExpireGroupType.GOOD;
         } else {
 
             // falling down this far.. must be a date so!
@@ -74,47 +79,47 @@ public class BaseItemsGroupedAndSorted implements Comparable<BaseItemsGroupedAnd
                     getAbsoluteExpireyDateTime()).getDays() - 1;
 
             if (days > 5) {
-                groupType = GroupType.GOOD;
+                expireGroupType = ExpireGroupType.GOOD;
             } else if (days >= 3 && days <= 5) {
-                groupType = GroupType.WARNING;
+                expireGroupType = ExpireGroupType.WARNING;
             } else {
-                groupType = GroupType.BAD;
+                expireGroupType = ExpireGroupType.BAD;
             }
 
-            groupName = "Expires: " + toProcess;
+            expireGroup = "Expires: " + toProcess;
 
             if (days == 0) {
-                groupName += " (Midnight)";
+                expireGroup += " (Midnight)";
             } else if (days == 1) {
-                groupName += " (Tomorrow)";
+                expireGroup += " (Tomorrow)";
             } else {
-                groupName += " (in " + days + " days)";
+                expireGroup += " (in " + days + " days)";
             }
 
         }
 
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getExpireGroup() {
+        return expireGroup;
     }
 
     public List<BaseItem> getBaseItems() {
         return baseItems;
     }
 
-    public GroupType getGroupType() {
-        return groupType;
+    public ExpireGroupType getExpireGroupType() {
+        return expireGroupType;
     }
 
     /**
-     * Compare the BaseItemsGroupedAndSorted's based on date expiring, if any.
+     * Compare the AllBaseItemsGroupedAndSorted's based on date expiring, if any.
      *
      * @param that to compare against
      * @return compare result
      */
     @Override
-    public int compareTo(BaseItemsGroupedAndSorted that) {
+    public int compareTo(AllBaseItemsGroupedAndSorted that) {
         return this.dateTimeNow.compareTo(that.dateTimeNow);
     }
 
@@ -132,11 +137,13 @@ public class BaseItemsGroupedAndSorted implements Comparable<BaseItemsGroupedAnd
     /**
      * Returns whether this UsageGroup is actually no longer relevant based on the current date.
      * i.e expired!
+     *
      * @return boolean
      */
     public boolean isNotExpired() {
         DateTime now = new DateTime().withTimeAtStartOfDay();
         return getAbsoluteExpireyDateTime().compareTo(now) > 0;
     }
+
 
 }
