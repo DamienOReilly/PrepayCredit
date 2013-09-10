@@ -25,6 +25,6 @@ package damo.three.ie.prepayusage;
 /**
  * Basic ENUM to distinguish usage groups. Mainly identifiable how close they are to expiring.
  */
-public enum GroupType {
+public enum ExpireGroupType {
     GOOD, WARNING, BAD
 }

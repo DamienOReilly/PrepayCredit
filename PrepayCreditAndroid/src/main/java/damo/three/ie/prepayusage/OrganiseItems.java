@@ -27,11 +27,11 @@ import java.util.*;
 public class OrganiseItems {
 
     private final List<BaseItem> baseItemCommons;
-    private final List<BaseItemsGroupedAndSorted> baseItemsGroupedAndSorted;
+    private final List<AllBaseItemsGroupedAndSorted> allBaseItemsGroupedAndSorted;
 
     public OrganiseItems(List<BaseItem> baseItemCommons) {
         this.baseItemCommons = baseItemCommons;
-        this.baseItemsGroupedAndSorted = new ArrayList<BaseItemsGroupedAndSorted>();
+        this.allBaseItemsGroupedAndSorted = new ArrayList<AllBaseItemsGroupedAndSorted>();
     }
 
     /**
@@ -39,7 +39,7 @@ public class OrganiseItems {
      *
      * @return usages grouped
      */
-    public List<BaseItemsGroupedAndSorted> groupUsages() {
+    public List<AllBaseItemsGroupedAndSorted> groupUsages() {
 
         // Sort the items
         Collections.sort(baseItemCommons);
@@ -60,14 +60,14 @@ public class OrganiseItems {
                     tmpBaseItems.add(b);
             }
 
-            baseItemsGroupedAndSorted.add(new BaseItemsGroupedAndSorted(
+            allBaseItemsGroupedAndSorted.add(new AllBaseItemsGroupedAndSorted(
                     tmpBaseItems));
         }
 
         // Finally, sort the groups themselves based on expiring date, if any.
-        Collections.sort(baseItemsGroupedAndSorted);
+        Collections.sort(allBaseItemsGroupedAndSorted);
 
-        return baseItemsGroupedAndSorted;
+        return allBaseItemsGroupedAndSorted;
     }
 
 }

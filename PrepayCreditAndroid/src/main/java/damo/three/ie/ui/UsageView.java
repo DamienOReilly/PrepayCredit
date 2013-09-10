@@ -30,9 +30,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.actionbarsherlock.internal.widget.IcsLinearLayout;
 import damo.three.ie.R;
+import damo.three.ie.prepayusage.AllBaseItemsGroupedAndSorted;
 import damo.three.ie.prepayusage.BaseItem;
-import damo.three.ie.prepayusage.BaseItemsGroupedAndSorted;
-import damo.three.ie.prepayusage.GroupType;
+import damo.three.ie.prepayusage.ExpireGroupType;
 
 public class UsageView extends LinearLayout {
 
@@ -40,10 +40,10 @@ public class UsageView extends LinearLayout {
      * LinearLayout for hosting the users usages
      *
      * @param context                   Application Context
-     * @param baseItemsGroupedAndSorted Usages
+     * @param allBaseItemsGroupedAndSorted Usages
      */
     public UsageView(Context context,
-                     BaseItemsGroupedAndSorted baseItemsGroupedAndSorted) {
+                     AllBaseItemsGroupedAndSorted allBaseItemsGroupedAndSorted) {
         super(context);
 
         // Get the group usage layout
@@ -56,12 +56,12 @@ public class UsageView extends LinearLayout {
                 .findViewById(R.id.textViewExtraInfo);
 
         // Color it if necessary
-        if (baseItemsGroupedAndSorted.getGroupType() == GroupType.WARNING) {
+        if (allBaseItemsGroupedAndSorted.getExpireGroupType() == ExpireGroupType.WARNING) {
             groupTitle.setTextColor(getResources().getColor(R.color.orange));
-        } else if (baseItemsGroupedAndSorted.getGroupType() == GroupType.BAD) {
+        } else if (allBaseItemsGroupedAndSorted.getExpireGroupType() == ExpireGroupType.BAD) {
             groupTitle.setTextColor(getResources().getColor(R.color.red));
         }
-        groupTitle.setText(baseItemsGroupedAndSorted.getGroupName());
+        groupTitle.setText(allBaseItemsGroupedAndSorted.getExpireGroup());
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -76,7 +76,7 @@ public class UsageView extends LinearLayout {
                 .findViewById(R.id.usage_items_view);
 
         // Add each item and its value to the layout
-        for (BaseItem baseItem : baseItemsGroupedAndSorted.getBaseItems()) {
+        for (BaseItem baseItem : allBaseItemsGroupedAndSorted.getBaseItems()) {
 
             View usageItemView = layoutInflater.inflate(R.layout.usageitems,
                     null);
