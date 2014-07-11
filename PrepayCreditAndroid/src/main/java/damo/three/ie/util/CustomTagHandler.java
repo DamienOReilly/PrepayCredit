@@ -41,8 +41,8 @@ import java.util.ArrayList;
  * use of generics to overcome compiler unchecked warnings.
  */
 public class CustomTagHandler implements Html.TagHandler {
-    private int mListItemCount = 0;
     private final ArrayList<String> mListParents = new ArrayList<String>();
+    private int mListItemCount = 0;
 
     @Override
     public void handleTag(final boolean opening, final String tag, Editable output, final XMLReader xmlReader) {
@@ -57,7 +57,8 @@ public class CustomTagHandler implements Html.TagHandler {
             handleListTag(output);
         } else if (tag.equalsIgnoreCase("code")) {
             if (opening) {
-                output.setSpan(new TypefaceSpan("monospace"), output.length(), output.length(), Spannable.SPAN_MARK_MARK);
+                output.setSpan(new TypefaceSpan("monospace"), output.length(), output.length(),
+                        Spannable.SPAN_MARK_MARK);
             } else {
                 Object obj = getLast(output, TypefaceSpan.class);
                 int where = output.getSpanStart(obj);

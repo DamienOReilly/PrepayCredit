@@ -22,45 +22,47 @@
 
 package damo.three.ie.prepayusage.items;
 
-import damo.three.ie.prepayusage.BaseItem;
+import damo.three.ie.prepayusage.UsageItem;
 import damo.three.ie.util.DateUtils;
 import damo.three.ie.util.NumberUtils;
 
 import java.text.ParseException;
 
-public class OutOfBundle extends BaseItem {
+public class OutOfBundle extends UsageItem {
 
-    private Long since;
+    private Number usageBandwidth;
+    private Number cost;
+    private Number outOfBundleDate;
 
-    public OutOfBundle(String value1str, String value2str,
-                       String outOfBundleDate) throws ParseException {
-        setValue1(value1str);
-        setValue2(value2str);
-        setDate(outOfBundleDate);
-        ITEM_NAME = "Since " + DateUtils.formatDate(since) + " : "
-                + getValue1formatted();
+    public OutOfBundle(String type, String usageBandwidth, String cost, String outOfBundleDate) throws ParseException {
+        super(type);
+        setUsageBandWidth(usageBandwidth);
+        setCost(cost);
+        setOutOfBundleDate(outOfBundleDate);
     }
 
-    @Override
-    public String getValue1formatted() {
-        return NumberUtils.formatFloat(value1) + "MB";
+    void setUsageBandWidth(String usageBandwidth) throws ParseException {
+        this.usageBandwidth = NumberUtils.parseNumeric(usageBandwidth);
     }
 
-    @Override
-    public String getValue2formatted() {
-        return NumberUtils.formatMoney(value2);
+    public String getUsageBandWidthStr() {
+        return NumberUtils.formatFloat(usageBandwidth) + "MB";
     }
 
-    private void setValue1(String value1str) throws ParseException {
-        value1 = NumberUtils.parseNumeric(value1str);
+    void setCost(String cost) throws ParseException {
+        this.cost = NumberUtils.parseMoney(cost);
     }
 
-    private void setValue2(String value2str) throws ParseException {
-        value2 = NumberUtils.parseMoney(value2str);
+    public String getCostStr() {
+        return NumberUtils.formatMoney(cost);
     }
 
-    private void setDate(String outOfBundleDate) {
-        since = DateUtils.parseOutOfBundleDate(outOfBundleDate);
+    void setOutOfBundleDate(String outOfBundleDate) {
+        this.outOfBundleDate = DateUtils.parseOutOfBundleDate(outOfBundleDate);
+    }
+
+    public String getOutOfBundleDateStr() {
+        return DateUtils.formatDate(outOfBundleDate);
     }
 
 }

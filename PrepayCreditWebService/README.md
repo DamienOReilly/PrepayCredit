@@ -1,6 +1,27 @@
-Prepay Credit for Android
+Prepay Credit Servlet
 =========================
 
-This folder contains the J EE WebService source code. This WebService is used if the user enables the "intermediate server" in the android application. The published apk in the Google Play Store will point to secure.damienoreilly.org
+This folder contains the Servlet source code. The android application no longer uses this servlet, however I have left
+the code here for now for other people's benefit.
 
-This WebService project is specifically setup for an automated deployment on a Tomcat7 application server, but in reality the WAR can be deployed on any Servlet 3.0 compatible application server such as Apache Tomcat v7+, IBM WebSphere v8.0+, Jetty v8+, Jboss v7+ etc...
+Returns your 3 Ireland 3Pay usage information in JSON format.
+
+You can deploy this to any Servlet container e.g. Tomcat.
+
+Usage information can be accessed via HTTP POST and GET, although POST is recommended to avoid credentials appearing in
+GET request logs.
+
+* GET:  
+```
+  http://<url>/My3WebService/FetchUsage?username=<mobile number>&password=<my3 password>
+```  
+
+* POST:  
+  ```
+  http://<url>/My3WebService/FetchUsage  
+  ```  
+  Post data:  
+```
+username=<mobile number>  
+password=<my3 password>  
+```

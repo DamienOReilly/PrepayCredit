@@ -23,38 +23,33 @@
 package damo.three.ie.activity;
 
 import android.os.Bundle;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import damo.three.ie.R;
+import damo.three.ie.fragment.SettingsFragment;
 
-public class SettingsActivity extends SherlockPreferenceActivity {
+public class SettingsActivity extends ActionBarActivity {
 
-    // addPreferencesFromResource(int) in android.preference.PreferenceActivity has been deprecated
-    // Recommendation is to use PreferenceFragment, but support-v4 lib doesn't have support for this however!
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.settings);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.settings);
+        actionBar.show();
 
-        // Add a return to home icon on the ActionBar.
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-
-        // Add lets make the ActionBar a bit nicer.
-        ab.setBackgroundDrawable(getResources().getDrawable(
-                R.drawable.actionbar));
-        ab.setTitle(R.string.settings);
+        // Display the fragment as the main content.
+        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            // User pressed the return to home icon on the left on the
-            // ActionBarSherlock.
+            // User pressed home on the action bar.
             case android.R.id.home:
                 finish();
                 break;

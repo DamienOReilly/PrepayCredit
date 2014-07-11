@@ -31,33 +31,36 @@ import org.joda.time.LocalDate;
  */
 public class InternetUsageRegistry {
 
+    public static final String INTERNET_EXPIRE_TIME = "expire_time";
+    public static final String INTERNET_EXPIRED = "already_expired";
+
     private static InternetUsageRegistry internetUsageRegistry;
     private DateTime dateTime;
 
     /**
      * We only ever need one instance of this. Using Singleton pattern as we still
      * want it to be stateful.
+     *
      * @return {@link InternetUsageRegistry}
      */
     public static InternetUsageRegistry getInstance() {
 
         if (internetUsageRegistry == null) {
-            internetUsageRegistry = new InternetUsageRegistry();         }
-
+            internetUsageRegistry = new InternetUsageRegistry();
+        }
         return internetUsageRegistry;
     }
 
     /**
      * Submit internet usage to registry, only accept it if we don't already have a usage, or if
      * current usage is older than one been submitted.
+     *
      * @param inLocalDateTimeAsMilliseconds Internet usage expiring date in milliseconds
      */
     public void submit(Long inLocalDateTimeAsMilliseconds) {
         if ((dateTime == null) ||
                 (dateTime.compareTo(new DateTime(inLocalDateTimeAsMilliseconds)) <= 0)) {
             /**
-             * note, make new object from primitive data, as we don't want to be holding reference to
-             * original class.
              * +1 day as they expire at 00:00:00am of the next day really.
              */
             dateTime = new DateTime(inLocalDateTimeAsMilliseconds).plusDays(1).withTimeAtStartOfDay();
@@ -73,6 +76,7 @@ public class InternetUsageRegistry {
 
     /**
      * Returns the last expiring internet usage item.
+     *
      * @return {@link LocalDate}
      */
     public DateTime getDateTime() {

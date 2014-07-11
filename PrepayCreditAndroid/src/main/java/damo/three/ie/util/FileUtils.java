@@ -31,8 +31,9 @@ import java.io.InputStreamReader;
 public class FileUtils {
 
     /**
-     * Reads the contents of a raw file into a String
-     * @param context Context
+     * Reads the contents of a raw file into a String.
+     *
+     * @param context    Context
      * @param resourceId ID of the raw resource
      * @return {@link String} containing file contents
      */
@@ -41,7 +42,7 @@ public class FileUtils {
         InputStream inputStream = context.getResources().openRawResource(resourceId);
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        String receiveString = "";
+        String receiveString;
         StringBuilder stringBuilder = new StringBuilder();
 
         while ((receiveString = bufferedReader.readLine()) != null) {

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of Prepay Credit for Android
   ~
   ~ Copyright © 2013  Damien O'Reilly
@@ -24,20 +23,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:summary="My3 PrePay settings"
+        android:summary="My3 PrePay Credentials"
         android:title="Login information">
         <EditTextPreference
             android:defaultValue=""
             android:inputType="number"
             android:key="mobile"
-            android:summary="Please enter your 3 mobile number"
-            android:title="Mobile number"/>
+            android:summary="@string/mobile_number"
+            android:title="Mobile number" />
         <EditTextPreference
             android:defaultValue=""
             android:inputType="textPassword"
             android:key="password"
-            android:summary="Please enter your password"
-            android:title="Password"/>
+            android:summary="@string/password"
+            android:title="Password" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -46,56 +45,51 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="notification"
-            android:summary="A notification will be triggered a few hours before the latest data/internet add-on is about to expire."
-            android:title="Show notification when data/internet add-on is about to expire."/>
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="refresh"
-            android:summary="Will refresh your usage immediately when you open the application"
-            android:title="Refresh usage on application startup"/>
+            android:summary="Notification will be triggered 4 hours before the latest data/internet add-on is about to expire."
+            android:title="Notification when data/internet add-on is about to expire." />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="intermediate_server"
-            android:summary="Faster response when on 2G and somewhat when on 3G. Relay server is at secure.damienoreilly.org and traffic is encrypted over TLS. (2G/3G only. Not used when on Wi-Fi)"
-            android:title="Use intermediate server"/>
+            android:key="refresh"
+            android:summary="Will refresh your usage immediately when you open the application."
+            android:title="Refresh usage on application startup." />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:summary="Enable crash report logging to help me fix bugs"
         android:title="Crash Report Logging">
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="acra.enable"
-            android:title="Enable Crash Report Logging"
-            android:summaryOn="Enabled"
             android:summaryOff="Disabled"
-            android:defaultValue="true"/>
+            android:summaryOn="Enabled"
+            android:title="Enable Crash Report Logging" />
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="acra.syslog.enable"
-            android:summaryOn="Enabled"
             android:summaryOff="Disabled"
-            android:title="Include system logs"
-            android:defaultValue="true"/>
+            android:summaryOn="Enabled"
+            android:title="Include system logs" />
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="acra.deviceid.enable"
-            android:title="Include Device ID"
-            android:summaryOn="Enabled"
             android:summaryOff="Disabled"
-            android:defaultValue="false"/>
+            android:summaryOn="Enabled"
+            android:title="Include Device ID" />
 
         <EditTextPreference
+            android:inputType="textEmailAddress"
             android:key="acra.user.email"
-            android:title="Include email address in reports"
             android:summary="Include email address in reports if you want to help me with bugs"
-            android:inputType="textEmailAddress"/>
+            android:title="Include email address in reports" />
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="acra.alwaysaccept"
-            android:title="Auto-accept sending reports"
-            android:summaryOn="Enabled"
             android:summaryOff="Disabled"
-            android:defaultValue="false"/>
+            android:summaryOn="Enabled"
+            android:title="Auto-accept sending reports" />
     </PreferenceCategory>
 
 </PreferenceScreen>

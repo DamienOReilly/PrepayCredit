@@ -22,8 +22,8 @@
   -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,8 +50,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:layout_marginRight="10dp"
-                    android:contentDescription="Prepay Credit"
-                    android:src="@drawable/ic_launcher"/>
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_launcher" />
             </LinearLayout>
 
             <LinearLayout
@@ -64,13 +64,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
                     android:textSize="18sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/about_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Small"/>
+                    android:textAppearance="@android:style/TextAppearance.Small" />
             </LinearLayout>
         </LinearLayout>
 
@@ -78,7 +78,7 @@
             android:id="@+id/about_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/primary_text_light_nodisable"/>
+            android:textColor="@android:color/primary_text_light_nodisable" />
     </LinearLayout>
 
 </ScrollView>

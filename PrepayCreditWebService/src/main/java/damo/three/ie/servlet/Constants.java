@@ -29,6 +29,6 @@ class Constants {
 	public static final String MY3_TOKEN_PAGE = "https://my3account.three.ie/ThreePortal/appmanager/Three/My3ROI?_pageLabel=P33403896361331912377205&_nfpb=true&resource=portlet&ticket=ST-";
 	public static final String LOGIN_TOKEN_REGEX = ".*<input type=\"hidden\" name=\"lt\" value=\"(LT-.*)\" />.*";
 	public static final String LOGGED_IN_TOKEN_REGEX = ".*ticket=ST-(.*)';.*";
-	public static final String OUT_OF_BUNDLE_REGEX = ".*Out-of-allowance data used since(.*)</p>.*";
+	public static final String OUT_OF_BUNDLE_REGEX = ".*Out-of-allowance data used since(.*?)</p>.*";
 
 }

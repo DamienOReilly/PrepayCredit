@@ -33,33 +33,51 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import damo.three.ie.R;
 import damo.three.ie.activity.InternetExpirationActivity;
+import damo.three.ie.prepayusage.InternetUsageRegistry;
+import org.joda.time.DateTime;
 
+/**
+ * Adds a notification in the notification bar when an internet add-on has expired or is about to.
+ */
 public class UsageNotifier extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        long millis = intent.getExtras().getLong(InternetUsageRegistry.INTERNET_EXPIRE_TIME);
+
+        boolean alreadyExpired = false;
+
+        if (millis > 0) {
+            long now = new DateTime().getMillis();
+            if (now > millis) {
+                alreadyExpired = true;
+            }
+        }
+
+        // Clicking on the notification opens the InternetExpirationActivity.
         Intent myIntent = new Intent(context, InternetExpirationActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent,
-                Intent.FLAG_ACTIVITY_NEW_TASK);
+        myIntent.putExtra(InternetUsageRegistry.INTERNET_EXPIRED, alreadyExpired);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_warning)
-                        .setLargeIcon(largeIcon)
-                        .setContentTitle(context.getString(R.string.internet_addon_expiring_title))
-                        .setTicker(context.getString(R.string.internet_addon_expiring_title))
-                        .setContentText(context.getString(R.string.internet_addon_expiring_text))
-                        .setAutoCancel(true)
-                        .setDefaults(Notification.DEFAULT_ALL)
-                        .setContentIntent(pendingIntent);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_warning)
+                .setLargeIcon(largeIcon)
+                .setContentTitle(context.getString(alreadyExpired ? R.string.internet_addon_expired_title : R.string
+                        .internet_addon_expiring_title))
+                .setTicker(context.getString(alreadyExpired ? R.string.internet_addon_expired_title : R.string
+                        .internet_addon_expiring_title))
+                .setContentText(context.getString(alreadyExpired ? R.string.internet_addon_expired_text : R.string
+                        .internet_addon_expiring_text))
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setContentIntent(pendingIntent);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // getNotification is depreciated in newer support v4 lib. build() is used instead
-        // newer support v4 lib isn't available on public maven repositories yet however.
-        mNotificationManager.notify(0, mBuilder.getNotification());
+        mNotificationManager.notify(0, mBuilder.build());
     }
 }

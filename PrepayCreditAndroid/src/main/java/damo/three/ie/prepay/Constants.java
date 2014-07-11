@@ -22,16 +22,20 @@
 
 package damo.three.ie.prepay;
 
-
 public class Constants {
 
-    public static final String INTERMEDIATE_SERVER_URL = "https://secure.damienoreilly.org/My3WebService/FetchUsage";
-    public static final String MY3_URL = "https://sso.three.ie/mylogin/?service=https%3A%2F%2Fmy3account.three.ie%2FThreePortal%2Fappmanager%2FThree%2FMy3ROI%3F_pageLabel%3DP33403896361331912377205%26_nfpb%3Dtrue%26resource=portlet";
-    public static final String MY3_USAGE_PAGE = "https://my3account.three.ie/My_account_balance";
+    public static final String MY3_ACCOUNT_PAGE = "https://sso.three.ie/mylogin/?service=https://my3account.three" +
+            ".ie/My_account_balance&dontTestForDongleUser=true";
     public static final String MY3_MAIN_PAGE = "https://my3account.three.ie";
-    public static final String MY3_TOKEN_PAGE = "https://my3account.three.ie/ThreePortal/appmanager/Three/My3ROI?_pageLabel=P33403896361331912377205&_nfpb=true&resource=portlet&ticket=ST-";
+    public static final String MY3_SERVICE_REGEX = ".*<p>Click <a href=\"(.*?)\".*to access the service you requested" +
+            ".*";
     public static final String LOGIN_TOKEN_REGEX = ".*<input type=\"hidden\" name=\"lt\" value=\"(LT-.*)\" />.*";
-    public static final String LOGGED_IN_TOKEN_REGEX = ".*ticket=ST-(.*)';.*";
-    public static final String OUT_OF_BUNDLE_REGEX = ".*Out-of-allowance data used since(.*)</p>.*";
+    public static final String OUT_OF_BUNDLE_REGEX = ".*Out-of-allowance data used since (\\d{1," +
+            "2}).*?\\s(.*?)\\s(\\d{4}).*";
     public static final String TAG = "PrepayCredit";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, " +
+            "like Gecko) Chrome/35.0.1916.153 Safari/537.36";
+
+    public static final String REGISTER_URL = "https://my3account.three.ie/Sign_up";
+    public static final String FORGOT_PASS_URL = "https://my3account.three.ie/Forgotten_password";
 }

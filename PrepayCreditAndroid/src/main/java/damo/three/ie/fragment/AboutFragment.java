@@ -26,6 +26,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -33,7 +34,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.actionbarsherlock.app.SherlockFragment;
 import damo.three.ie.R;
 import damo.three.ie.prepay.Constants;
 import damo.three.ie.util.CustomTagHandler;
@@ -41,7 +41,7 @@ import damo.three.ie.util.FileUtils;
 
 import java.io.IOException;
 
-public class AboutFragment extends SherlockFragment {
+public class AboutFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -55,7 +55,7 @@ public class AboutFragment extends SherlockFragment {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
         String content = "";
         try {
-            content = FileUtils.readFile(getSherlockActivity(), R.raw.about);
+            content = FileUtils.readFile(getActivity(), R.raw.about);
         } catch (IOException e) {
             /* something went wrong reading the raw file */
             e.printStackTrace();
@@ -64,8 +64,7 @@ public class AboutFragment extends SherlockFragment {
         TextView versionText = (TextView) view.findViewById(R.id.about_version);
         versionText.setText(getString(R.string.about_version) + " " + getVersion());
 
-        TextView aboutTextView = (TextView) view
-                .findViewById(R.id.about_text);
+        TextView aboutTextView = (TextView) view.findViewById(R.id.about_text);
         aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());
         aboutTextView.setText(Html.fromHtml(content, null, new CustomTagHandler()));
 
@@ -78,7 +77,7 @@ public class AboutFragment extends SherlockFragment {
      * @return The current version.
      */
     private String getVersion() {
-        String result = "";
+        String result;
         try {
             PackageManager manager = getActivity().getPackageManager();
             PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);

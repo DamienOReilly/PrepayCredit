@@ -29,23 +29,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import damo.three.ie.prepayusage.BaseItem;
+import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.prepayusage.InternetUsageRegistry;
+import damo.three.ie.prepayusage.UsageItem;
 import damo.three.ie.prepayusage.items.Data;
 import damo.three.ie.prepayusage.items.InternetAddon;
 import damo.three.ie.util.JSONUtils;
+import damo.three.ie.util.UsageUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.text.ParseException;
 import java.util.List;
 
 //TODO: remove any duplicate code with damo.three.ie.fragment.AccountProcessorFragment
+
+/**
+ * This class is executed when the phone boots up to set internet add-on expiring alarms. As alarms aren't
+ * persisted across reboots on Android.
+ */
 public class PrepayAlarmManager extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        SharedPreferences sharedPrefsUsages = context.getSharedPreferences(
-                "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
+        SharedPreferences sharedPrefsUsages = context.getSharedPreferences("damo.three.ie.previous_usage",
+                Context.MODE_PRIVATE);
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -55,13 +62,13 @@ public class PrepayAlarmManager extends BroadcastReceiver {
         // first check if anything was persisted
         if (usage != null) {
             try {
-                List<BaseItem> baseItems = JSONUtils
-                        .jsonToBaseItems(new JSONArray(usage));
+                List<UsageItem> usageItems = JSONUtils.jsonToUsageItems(new JSONArray(usage));
+                List<BasicUsageItem> basicUsageItems = UsageUtils.getAllBasicItems(usageItems);
 
                 InternetUsageRegistry internetUsageRegistry = InternetUsageRegistry.getInstance();
 
                 /* For each Internet add-on, add it to InternetUsageRegistry */
-                for (BaseItem b : baseItems) {
+                for (BasicUsageItem b : basicUsageItems) {
                     if (b instanceof InternetAddon || b instanceof Data) {
                         /* Make sure it's not expired first */
                         if (b.isNotExpired()) {
@@ -71,9 +78,12 @@ public class PrepayAlarmManager extends BroadcastReceiver {
                 }
                 AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 Intent myIntent = new Intent(context.getApplicationContext(), UsageNotifier.class);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                        context.getApplicationContext(), 0, myIntent,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
+                // Add internet expire time to intent. We need this if the add-on expired while the phone was off.
+                // We will use this to determine the appropriate information to show the user.
+                myIntent.putExtra(InternetUsageRegistry.INTERNET_EXPIRE_TIME,
+                        internetUsageRegistry.getDateTime().getMillis());
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0,
+                        myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
                 if (internetUsageRegistry.getDateTime() != null && notificationsEnabled) {
                     am.cancel(pendingIntent);
@@ -84,19 +94,14 @@ public class PrepayAlarmManager extends BroadcastReceiver {
                      *  and expire time as its good for user to get a notification when they turn on
                      *  the device.
                      */
-                        am.set(AlarmManager.RTC_WAKEUP,
-                                internetUsageRegistry.getDateTime().minusHours(4).getMillis(),
-                                pendingIntent);
+                    am.set(AlarmManager.RTC_WAKEUP, internetUsageRegistry.getDateTime().minusHours(4).getMillis(),
+                            pendingIntent);
                 } else {
                     am.cancel(pendingIntent);
                 }
-
-            } catch (ParseException e) {
-                e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }

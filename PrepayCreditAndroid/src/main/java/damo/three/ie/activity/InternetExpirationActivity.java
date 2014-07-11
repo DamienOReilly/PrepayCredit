@@ -34,13 +34,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import damo.three.ie.R;
 import damo.three.ie.prepay.Constants;
+import damo.three.ie.prepayusage.InternetUsageRegistry;
 import damo.three.ie.util.DateUtils;
 
+/**
+ * Activity which deals with UI that is shown to the user when their internet add-on is about to expire or has already
+ * expired.
+ */
 public class InternetExpirationActivity extends Activity {
 
     private TextView textViewSummary = null;
-
-    //TODO: add some Activity for when the user clicks on the notification
+    private boolean alreadyExpired = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,9 @@ public class InternetExpirationActivity extends Activity {
         textViewSummary = (TextView) findViewById(R.id.textViewSummary);
         Button buttonThree = (Button) findViewById(R.id.buttonThree);
         Button buttonOk = (Button) findViewById(R.id.buttonOk);
+
+        // Get the tie it expired, in-case its already expired.
+        alreadyExpired = getIntent().getExtras().getBoolean(InternetUsageRegistry.INTERNET_EXPIRED);
 
         /*
          * Action for buttonThree
@@ -87,12 +94,8 @@ public class InternetExpirationActivity extends Activity {
      * Update the text view to warn the user their internet add-on expires tonight.
      */
     private void updateTextViewSummary() {
-        //TODO; we need a different message if the addon has already expired. (can happen if add-on expires when phone is off)
-        StringBuilder sb = new StringBuilder();
-        sb.append("According to your last refresh on: ");
-        sb.append(getLastRefreshTime());
-        sb.append(", your latest internet add-on is due to expire at midnight tonight.");
-        textViewSummary.setText(sb.toString());
+        textViewSummary.setText(String.format(getString(alreadyExpired ? R.string.internet_expired_summary : R.string
+                .internet_expiring_summary), getLastRefreshTime()));
     }
 
     /**
@@ -101,9 +104,7 @@ public class InternetExpirationActivity extends Activity {
      * @return Last refreshed time as {@link String}
      */
     private String getLastRefreshTime() {
-        SharedPreferences sharedPref = getSharedPreferences("damo.three.ie.previous_usage",
-                Context.MODE_PRIVATE);
-
+        SharedPreferences sharedPref = getSharedPreferences("damo.three.ie.previous_usage", Context.MODE_PRIVATE);
         long refreshDate = sharedPref.getLong("last_refreshed_milliseconds", 0L);
         return DateUtils.formatDateTime(refreshDate);
     }

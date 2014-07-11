@@ -34,12 +34,13 @@ import java.util.Date;
 
 /**
  * Tweaked some code took from:
- * http://stackoverflow.com/questions/4115101/apache-httpclient-on-android-producing-certpathvalidatorexception-issuername
- *
+ * http://stackoverflow.com/questions/4115101/apache-httpclient-on-android-producing-certpathvalidatorexception
+ * -issuername
+ * <p/>
  * Using this as my3account.three.ie's certs are out of order !
- * Also I have my3account.three.ie's certs added to a keystore as Entrust's certs Were not available on some Android devices.
+ * Also I have my3account.three.ie's certs added to a keystore as Entrust's certs Were not available on some Android
+ * devices.
  * Cert validation is enforced to help prevent MiTM attacks.
- *
  */
 class EasyX509TrustManager implements X509TrustManager {
     private X509TrustManager standardTrustManager = null;
@@ -47,11 +48,9 @@ class EasyX509TrustManager implements X509TrustManager {
     /**
      * Constructor for EasyX509TrustManager.
      */
-    public EasyX509TrustManager(KeyStore keystore)
-            throws NoSuchAlgorithmException, KeyStoreException {
+    public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         super();
-        TrustManagerFactory factory = TrustManagerFactory
-                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
         if (trustmanagers.length == 0) {
@@ -62,21 +61,19 @@ class EasyX509TrustManager implements X509TrustManager {
 
     /**
      * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[],
-     *      String authType)
+     * String authType)
      */
     @Override
-    public void checkClientTrusted(X509Certificate[] certificates,
-                                   String authType) throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
         standardTrustManager.checkClientTrusted(certificates, authType);
     }
 
     /**
      * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[],
-     *      String authType)
+     * String authType)
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] certificates,
-                                   String authType) throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
         // Clean up the certificates chain and build a new one.
         // Theoretically, we shouldn't have to do this, but various web servers
         // in practice are mis-configured to have out-of-order certificates or
@@ -94,8 +91,7 @@ class EasyX509TrustManager implements X509TrustManager {
             for (currIndex = 0; currIndex < certificates.length; ++currIndex) {
                 boolean foundNext = false;
                 for (int nextIndex = currIndex + 1; nextIndex < certificates.length; ++nextIndex) {
-                    if (certificates[currIndex].getIssuerDN().equals(
-                            certificates[nextIndex].getSubjectDN())) {
+                    if (certificates[currIndex].getIssuerDN().equals(certificates[nextIndex].getSubjectDN())) {
                         foundNext = true;
                         // Exchange certificates so that 0 through currIndex + 1
                         // are in proper order
@@ -119,9 +115,8 @@ class EasyX509TrustManager implements X509TrustManager {
             chainLength = currIndex + 1;
             X509Certificate lastCertificate = certificates[chainLength - 1];
             Date now = new Date();
-            if (lastCertificate.getSubjectDN().equals(
-                    lastCertificate.getIssuerDN())
-                    && now.after(lastCertificate.getNotAfter())) {
+            if (lastCertificate.getSubjectDN().equals(lastCertificate.getIssuerDN()) &&
+                    now.after(lastCertificate.getNotAfter())) {
                 --chainLength;
             }
         }

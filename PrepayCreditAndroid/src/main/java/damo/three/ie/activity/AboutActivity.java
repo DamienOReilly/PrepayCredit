@@ -26,18 +26,17 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import damo.three.ie.R;
 import damo.three.ie.ui.ViewPagerAdapter;
 
-public class AboutActivity extends SherlockFragmentActivity {
+public class AboutActivity extends ActionBarActivity {
 
     private ActionBar actionBar;
     private ViewPager viewPager;
-    private Tab tab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +48,6 @@ public class AboutActivity extends SherlockFragmentActivity {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        // Add lets make the ActionBar a bit nicer.
-        actionBar.setBackgroundDrawable(getResources().getDrawable(
-                R.drawable.actionbar));
 
         viewPager = (ViewPager) findViewById(R.id.pager);
 
@@ -92,7 +88,7 @@ public class AboutActivity extends SherlockFragmentActivity {
         };
 
         // Create first Tab
-        tab = actionBar.newTab().setText(R.string.about).setTabListener(tabListener);
+        Tab tab = actionBar.newTab().setText(R.string.about).setTabListener(tabListener);
         actionBar.addTab(tab);
 
         // Create second Tab
@@ -104,8 +100,7 @@ public class AboutActivity extends SherlockFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            // User pressed the return to home icon on the left on the
-            // ActionBarSherlock.
+            // User pressed the return to home icon on the left on the ActionBar.
             case android.R.id.home:
                 finish();
                 break;

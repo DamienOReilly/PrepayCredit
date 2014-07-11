@@ -22,40 +22,39 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textViewSummary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewSummary"
-        android:layout_margin="6dp"
-        />
+        android:layout_margin="6dp" />
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="5dp">
 
         <Button
+            android:id="@+id/buttonThree"
+            style="@style/PrepayButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/my3"
-            android:id="@+id/buttonThree"
             android:layout_weight="0.5"
             android:background="@drawable/blue_button"
-            style="@style/PrepayButton"/>
+            android:text="@string/my3" />
 
         <Button
+            android:id="@+id/buttonOk"
+            style="@style/PrepayButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ok"
-            android:id="@+id/buttonOk"
             android:layout_weight="0.5"
             android:background="@drawable/blue_button"
-            style="@style/PrepayButton"/>
+            android:text="@string/ok" />
 
     </LinearLayout>
 </LinearLayout>

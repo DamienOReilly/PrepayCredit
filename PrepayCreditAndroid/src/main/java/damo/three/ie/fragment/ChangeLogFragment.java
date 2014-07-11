@@ -22,20 +22,20 @@
 package damo.three.ie.fragment;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.actionbarsherlock.app.SherlockFragment;
 import damo.three.ie.R;
 import damo.three.ie.util.CustomTagHandler;
 import damo.three.ie.util.FileUtils;
 
 import java.io.IOException;
 
-public class ChangeLogFragment extends SherlockFragment {
+public class ChangeLogFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -49,14 +49,13 @@ public class ChangeLogFragment extends SherlockFragment {
         View view = inflater.inflate(R.layout.fragment_changelog, container, false);
         String content = "";
         try {
-            content = FileUtils.readFile(getSherlockActivity(), R.raw.changelog);
+            content = FileUtils.readFile(getActivity(), R.raw.changelog);
         } catch (IOException e) {
             /* something went wrong reading the raw file */
             e.printStackTrace();
         }
 
-        TextView aboutTextView = (TextView) view
-                .findViewById(R.id.changelog_text);
+        TextView aboutTextView = (TextView) view.findViewById(R.id.changelog_text);
         aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());
         aboutTextView.setText(Html.fromHtml(content, null, new CustomTagHandler()));
 

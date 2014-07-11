@@ -36,21 +36,21 @@ import java.security.KeyStore;
 
 /**
  * Tweaked some code took from:
- * http://stackoverflow.com/questions/4115101/apache-httpclient-on-android-producing-certpathvalidatorexception-issuername
- *
+ * http://stackoverflow.com/questions/4115101/apache-httpclient-on-android-producing-certpathvalidatorexception
+ * -issuername
+ * <p/>
  * Using this as my3account.three.ie's certs are out of order !
- * Also I have my3account.three.ie's certs added to a keystore as Entrust's certs Were not available on some Android devices.
+ * Also I have my3account.three.ie's certs added to a keystore as Entrust's certs were not available on some Android
+ * devices.
  * Cert validation is enforced to help prevent MiTM attacks.
- *
  */
-class EasySSLSocketFactory implements SocketFactory,
-        LayeredSocketFactory {
-    private SSLContext sslcontext = null;
+class EasySSLSocketFactory implements SocketFactory, LayeredSocketFactory {
+
     private static KeyStore keyStore = null;
+    private SSLContext sslcontext = null;
 
     public EasySSLSocketFactory(KeyStore keyStore) {
         EasySSLSocketFactory.keyStore = keyStore;
-
     }
 
     /**
@@ -61,14 +61,11 @@ class EasySSLSocketFactory implements SocketFactory,
         try {
             SSLContext context = SSLContext.getInstance("TLS");
 
-            KeyManagerFactory kmfactory = KeyManagerFactory
-                    .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmfactory.init(keyStore, "damopass".toCharArray());
             KeyManager[] km = kmfactory.getKeyManagers();
 
-            context.init(km, new TrustManager[]{new EasyX509TrustManager(
-                    keyStore)}, null);
-
+            context.init(km, new TrustManager[]{new EasyX509TrustManager(keyStore)}, null);
             return context;
         } catch (Exception e) {
             throw new IOException(e.getMessage());
@@ -90,14 +87,12 @@ class EasySSLSocketFactory implements SocketFactory,
 
     /**
      * @see org.apache.http.conn.scheme.SocketFactory#connectSocket(java.net.Socket,
-     *      java.lang.String, int, java.net.InetAddress, int,
-     *      org.apache.http.params.HttpParams)
+     * java.lang.String, int, java.net.InetAddress, int,
+     * org.apache.http.params.HttpParams)
      */
     @Override
-    public Socket connectSocket(Socket sock, String host, int port,
-                                InetAddress localAddress, int localPort, HttpParams params)
-
-            throws IOException {
+    public Socket connectSocket(Socket sock, String host, int port, InetAddress localAddress, int localPort,
+                                HttpParams params) throws IOException {
         int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
         int soTimeout = HttpConnectionParams.getSoTimeout(params);
         InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
@@ -108,8 +103,7 @@ class EasySSLSocketFactory implements SocketFactory,
             if (localPort < 0) {
                 localPort = 0; // indicates "any"
             }
-            InetSocketAddress isa = new InetSocketAddress(localAddress,
-                    localPort);
+            InetSocketAddress isa = new InetSocketAddress(localAddress, localPort);
             sslsock.bind(isa);
         }
 
@@ -137,13 +131,11 @@ class EasySSLSocketFactory implements SocketFactory,
 
     /**
      * @see org.apache.http.conn.scheme.LayeredSocketFactory#createSocket(java.net.Socket,
-     *      java.lang.String, int, boolean)
+     * java.lang.String, int, boolean)
      */
     @Override
-    public Socket createSocket(Socket socket, String host, int port,
-                               boolean autoClose) throws IOException {
-        return getSSLContext().getSocketFactory().createSocket(socket, host,
-                port, autoClose);
+    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
+        return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
     }
 
     // -------------------------------------------------------------------
@@ -153,8 +145,7 @@ class EasySSLSocketFactory implements SocketFactory,
     // -------------------------------------------------------------------
     @Override
     public boolean equals(Object obj) {
-        return ((obj != null) && obj.getClass().equals(
-                EasySSLSocketFactory.class));
+        return ((obj != null) && obj.getClass().equals(EasySSLSocketFactory.class));
     }
 
     @Override

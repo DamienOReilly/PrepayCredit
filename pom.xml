@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ This file is part of Prepay Credit for Android
   ~
   ~ Copyright © 2013  Damien O'Reilly
@@ -21,7 +20,8 @@
   ~ Contact the author at:          damienreilly@gmail.com
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>damo.three.ie.prepaycredit</groupId>
@@ -30,7 +30,9 @@
     <packaging>pom</packaging>
 
     <name>Prepay Credit</name>
-    <description>Prepay Credit Android application and accompanying J EE WebService. Works with 3 Ireland Prepay accounts.</description>
+    <description>Prepay Credit Android application and accompanying J EE WebService. Works with 3 Ireland Prepay
+        accounts.
+    </description>
     <url>http://damienoreilly.com</url>
     <inceptionYear>2013</inceptionYear>
 
@@ -39,7 +41,7 @@
         <developerConnection>scm:git:ssh://git@github.com/DamienOReilly/PrepayCredit.git</developerConnection>
         <url>https://github.com/DamienOReilly/PrepayCredit</url>
         <tag>Prepay Credit</tag>
-  </scm>
+    </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>

@@ -24,27 +24,21 @@ package damo.three.ie.prepay;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import damo.three.ie.fragment.AccountProcessorFragment;
 import damo.three.ie.net.ProcessRequest;
 import damo.three.ie.net.ThreeHttpClient;
+import damo.three.ie.util.AccountException;
 import damo.three.ie.util.HtmlUtilities;
-import damo.three.ie.util.ThreeException;
+import damo.three.ie.util.PrepayException;
 import org.acra.ACRA;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -55,17 +49,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class is responsible for logging into the My3 account and fetching details. Parsing data and returning usages
+ * in JSON format.
+ */
 public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
 
-    private HttpClient httpClient = null;
+    private final AccountProcessorFragment accountProcessorFragment;
     private String pageContent = null;
-    private Throwable damn = null;
-    private SharedPreferences sharedPreferences = null;
+    private Exception exception = null;
     private JSONArray jsonArray = null;
     private List<NameValuePair> postData = null;
+    private ProcessRequest processRequest;
 
-    private final AccountProcessorFragment accountProcessorFragment;
-    private Context context = null;
 
     /**
      * @param accountProcessorFragment Fragment that initialized this {@link AsyncTask}
@@ -74,254 +70,88 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
      * @throws CertificateException
      * @throws IOException
      */
-    public AccountProcessor(AccountProcessorFragment accountProcessorFragment)
-            throws
-            KeyStoreException, NoSuchAlgorithmException, CertificateException,
-            IOException {
+    public AccountProcessor(AccountProcessorFragment accountProcessorFragment) throws KeyStoreException,
+            NoSuchAlgorithmException, CertificateException, IOException {
 
         this.accountProcessorFragment = accountProcessorFragment;
 
-        context = accountProcessorFragment.getSherlockActivity()
-                .getApplicationContext();
+        Context context = accountProcessorFragment.getActivity().getApplicationContext();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        this.httpClient = ThreeHttpClient.getInstance(context).getHttpClient();
+        DefaultHttpClient httpClient = ThreeHttpClient.getInstance(context).getHttpClient();
+        processRequest = new ProcessRequest(httpClient);
         postData = new ArrayList<NameValuePair>();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        jsonArray = new JSONArray();
+
         addPropertyToPostData("username", sharedPreferences.getString("mobile", ""));
         addPropertyToPostData("password", sharedPreferences.getString("password", ""));
     }
 
     /**
      * Begin fetching the usage
-     *
-     * @throws IOException
-     * @throws ThreeException
-     * @throws JSONException
      */
-    private void start() throws IOException,
-            ThreeException, JSONException {
+    private void start() throws IOException, AccountException, JSONException, PrepayException {
+        // Attempt to log in.
+        pageContent = processRequest.process(Constants.MY3_ACCOUNT_PAGE);
+        Log.d(Constants.TAG, "using: my3account.three.ie");
 
-        // check if the user is using Wi-Fi. We won't use the intermediate
-        // server if the user is on Wi-Fi. Direct to my3account.three.ie should
-        // be be fast enough on Wi-Fi and also means there is less load on our
-        // WebService.
-        ConnectivityManager connManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connManager
-                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        // Are we going to use the intermediate server?
-        if ((sharedPreferences.getBoolean("intermediate_server", true))
-                && (!wifi.isConnected())) {
-
-            Log.d(Constants.TAG, "Using: secure.damienoreilly.org");
-            pageContent = new ProcessRequest(httpClient,
-                    Constants.INTERMEDIATE_SERVER_URL, postData).process();
-
-            // Did the My3WebService give us back an exception?
-            if (pageContent.startsWith("Exception[")) {
-                Pattern p = Pattern.compile("Exception\\[(.*)\\]");
-                Matcher m = p.matcher(pageContent);
-
-                if (m.matches()) {
-                    throw new ThreeException(m.group(1));
-                }
-            }
-
-            jsonArray = new JSONArray(pageContent);
-
-        } else {
-
-            pageContent = new ProcessRequest(httpClient, Constants.MY3_URL).process();
-            Log.d(Constants.TAG, "using: my3account.three.ie");
-
-            // Check if this brought us to the login page.., if so, then login.
-            // Sometimes when using prepay on gsm, we aren't asked for login. Seems
-            // to be some server side session, as its not handled my cookies
-            // anyway.
+        // Were we brought to the login page? If so, login. We sometimes skip this if our cookie still holds a valid
+        // session.
+        if (pageContent.contains("<label for=\"username\" class=\"portlet-form-input-label\">")) {
             Pattern p1 = Pattern.compile(Constants.LOGIN_TOKEN_REGEX, Pattern.DOTALL);
             Matcher m1 = p1.matcher(pageContent);
-
-            // If we retrieved a login-token, attempt to submit login
-            // credentials
             if (m1.matches()) {
                 Log.d(Constants.TAG, "Logging in...");
-
                 addPropertyToPostData("lt", m1.group(1));
-
-                pageContent = new ProcessRequest(httpClient, Constants.MY3_URL, postData)
-                        .process();
-
+                pageContent = processRequest.process(Constants.MY3_ACCOUNT_PAGE, postData);
                 if (pageContent.contains("Sorry, you've entered an invalid")) {
-
-                    throw new ThreeException(
-                            "Invalid 3 mobile number or password.");
-                } else if (pageContent
-                        .contains("You have entered your login details incorrectly too many times")) {
-                    throw new ThreeException(
-                            "Account is temporarily disabled due to too many incorrect logins. Please try again later.");
+                    throw new AccountException("Invalid 3 mobile number or password.");
+                } else if (pageContent.contains("You have entered your login details incorrectly too many times")) {
+                    throw new AccountException("Account is temporarily disabled due to too many incorrect logins. " +
+                            "Please try again later.");
                 }
-
-                acceptToken();
-
-                // Otherwise check if we are already logged in Sometimes when on
-                // GSM, it auto logs you in and you get sent to to Page with ST
-                // token.
-            } else if (pageContent.contains("Login successful.")) {
-
-                Log.d(Constants.TAG,
-                        "Seems we are already logged in! Fairly common when on GSM, not WiFi.");
-                acceptToken();
-
-            } else {
-                errorFetchingUsage(this.getClass().getCanonicalName() + ":start()");
             }
         }
-    }
 
-    /**
-     * On my3account.three.ie, we need to scrape a token to POST with our login details.
-     *
-     * @throws ThreeException
-     * @throws IOException
-     * @throws JSONException
-     */
-    private void acceptToken() throws ThreeException, IOException,
-            JSONException {
-        Pattern p1 = Pattern.compile(Constants.LOGGED_IN_TOKEN_REGEX, Pattern.DOTALL);
-        Matcher m1 = p1.matcher(pageContent);
+        // We end up here if we have logged in, or if our cookie was still valid.
+        if (pageContent.contains("here</a> to access the service you requested.</p>")) {
+            Pattern p1 = Pattern.compile(Constants.MY3_SERVICE_REGEX, Pattern.DOTALL);
+            Matcher m1 = p1.matcher(pageContent);
+            if (m1.matches()) {
+                pageContent = processRequest.process(m1.group(1));
+            }
+            if (pageContent.contains("<p><strong>Your account balance.</strong></p>")) {
+                parseUsage();
+            } else {
+                errorFetchingUsage();
+            }
 
-        if (m1.matches()) {
-            Log.d(Constants.TAG, "Submitting token via: " + Constants.MY3_TOKEN_PAGE + m1.group(1));
-            pageContent = new ProcessRequest(httpClient, Constants.MY3_TOKEN_PAGE
-                    + m1.group(1)).process();
-
-            my3FetchUsage();
-
-        } else {
-            errorFetchingUsage(this.getClass().getCanonicalName() + ":acceptToken()");
         }
     }
 
     /**
-     * Grab the usage page
-     *
-     * @throws ThreeException
-     * @throws IOException
-     * @throws JSONException
+     * There was some problem fetching the usage, Alert the user, and log report for unexpected application state.
+     * Might be useful for debugging.
      */
-    private void my3FetchUsage() throws ThreeException, IOException,
-            JSONException {
+    private void errorFetchingUsage() throws PrepayException {
 
-        if (pageContent.contains("Welcome back.")) {
-            Log.d(Constants.TAG, "Grabbing usage.");
+        String msg = "Unexpected response from server. Are you a 3Pay Ireland user? Or is my3account.three.ie down?";
 
-            pageContent = new ProcessRequest(httpClient, Constants.MY3_USAGE_PAGE)
-                    .process();
-            my3ParseUsage();
-
-        } else {
-            errorFetchingUsage(this.getClass().getCanonicalName() + ":my3FetchUsage()");
-        }
-
-    }
-
-    /**
-     * There was some problem fetching the usage, Alert the user, and log report for
-     * unexpected application state. Might be useful for debugging.
-     */
-    private void errorFetchingUsage(String caller) throws ThreeException {
-
-        String msg = "Error logging in. Unexpected response from server. Are you a 3Pay Ireland user? Or is my3account.three.ie down?";
-
-        // There was some problem logging in
-        ACRA.getErrorReporter().putCustomData("CALLER", caller);
+        // There was some problem logging in. Log a bug report in-case 3 changed their page and we cannot parse it.
+        PrepayException ex = new PrepayException(msg);
         ACRA.getErrorReporter().putCustomData("CURRENT_PAGE_CONTENT", pageContent);
-        ACRA.getErrorReporter().handleSilentException(new ThreeException(msg));
+        ACRA.getErrorReporter().handleSilentException(ex);
 
         //still let the user know we couldn't fetch the usage.
-        throw new ThreeException(msg);
+        throw new PrepayException(ex);
     }
 
     /**
      * Clean up the HTML, and parse. Convert usages into JSON.
-     *
-     * @throws JSONException
      */
-    private void my3ParseUsage() throws JSONException {
-        // The HTML on prepay is pig-ugly, so we will use JSoup to
-        // clean and parse it.
-        Log.d(Constants.TAG, "Ok, now parsing usage. prepay.");
-
-        Document doc = Jsoup.parse(pageContent);
-        HtmlUtilities.removeComments(doc);
-
-        Elements elements = doc.getElementsByTag("table");
-
-        // The My3WebService will also return usages as JSON. This is a common
-        // format that the app and webservice will use.
-        jsonArray = new JSONArray();
-
-        // three don't have a sub label for the 3-to-3 calls, which is not consistent with other items.
-        // .. feck them!
-        boolean three2threeCallsBug = false;
-
-        for (Element element : elements) {
-
-            for (Element subelement : element.select("tbody > tr")) {
-
-                if ((subelement.text().contains("3 to 3 Calls"))
-                        && (subelement.text().contains("Valid until")))
-                    three2threeCallsBug = true;
-
-                Elements subsubelements = subelement.select("td");
-
-                if (subsubelements.size() == 3) {
-
-                    // skip the "total" entries
-                    if (subsubelements.select("td").get(0).text()
-                            .contains("Total")) {
-                        continue;
-                    }
-
-                    JSONObject currentItem = new JSONObject();
-
-                    if (three2threeCallsBug) {
-                        currentItem.put("item", "3 to 3 Calls");
-                    } else {
-                        // Get rid of that "non-breaking space" character if it exists
-                        String titleToClean = subsubelements.select("td")
-                                .get(0).text().replace("\u00a0", "").trim();
-                        currentItem.put("item", titleToClean);
-                    }
-
-                    currentItem.put("value1", subsubelements.select("td")
-                            .get(1).text());
-                    currentItem.put("value2", subsubelements.select("td")
-                            .get(2).text());
-
-                    // Out of Bundle charges has an extra property
-                    if (currentItem.getString("item").equals("Internet")) {
-
-                        Pattern p1 = Pattern.compile(Constants.OUT_OF_BUNDLE_REGEX,
-                                Pattern.DOTALL);
-                        Matcher m1 = p1.matcher(pageContent);
-
-                        if (m1.matches()) {
-                            currentItem.put("value3", m1.group(1));
-                        }
-
-                    }
-                    jsonArray.put(currentItem);
-                }
-
-            }
-
-            // reset the 3-to-3 call bug flag for next {@link Element}
-            if (three2threeCallsBug) {
-                three2threeCallsBug = false;
-            }
-        }
+    private void parseUsage() throws JSONException {
+        jsonArray = HtmlUtilities.parseUsageAsJSONArray(pageContent);
     }
 
     /**
@@ -332,16 +162,12 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray jsonArray) {
 
-        if (damn != null) {
-            accountProcessorFragment.reportBackException(damn);
+        if (exception != null) {
+            accountProcessorFragment.reportBackException(exception);
         } else {
-
-            if (jsonArray.length() > 0) {
-                accountProcessorFragment.reportBackUsages(jsonArray);
-            }
+            accountProcessorFragment.reportBackUsages(jsonArray);
         }
     }
-
 
     /**
      * {@link AsyncTask} worker
@@ -349,20 +175,16 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
     @Override
     protected JSONArray doInBackground(Void... arg0) {
         try {
-
             start();
-            return jsonArray;
-
+            //return HtmlUtilities.parseUsageAsJSONArray(FileUtils.readFile(context, R.raw.usage));
         } catch (Exception e) {
-            e.printStackTrace();
-            damn = e;
-
+            exception = e;
         }
-        // According to http://httpcomponents.10934.n7.nabble.com/how-do-I-close-connections-on-HttpClient-4-x-td13679.html
+        // According to:
+        // http://httpcomponents.10934.n7.nabble.com/how-do-I-close-connections-on-HttpClient-4-x-td13679.html
         // Apache Http library itself releases connections as needed. Also our HttpClient is a singleton, so we want it
         // to be reused. Therefore I'm not cleaning up in finally{} block.
-
-        return null;
+        return jsonArray;
     }
 
     /**
@@ -374,5 +196,4 @@ public class AccountProcessor extends AsyncTask<Void, Void, JSONArray> {
     private void addPropertyToPostData(String property, String value) {
         postData.add(new BasicNameValuePair(property, value));
     }
-
 }

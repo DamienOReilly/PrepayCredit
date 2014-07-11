@@ -22,23 +22,17 @@
 
 package damo.three.ie.prepayusage.items;
 
-import damo.three.ie.prepayusage.BaseItem;
-import damo.three.ie.util.DateUtils;
+import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.util.NumberUtils;
 
 import java.text.ParseException;
 
-public class Texts extends BaseItem {
+public class Texts extends BasicUsageItem {
 
     public Texts(String value1str, String value2str) throws ParseException {
-        ITEM_NAME = "Texts";
+        super("Texts");
         setValue1(value1str);
         setValue2(value2str);
-    }
-
-    @Override
-    public String getValue1formatted() {
-        return DateUtils.formatDate(value1);
     }
 
     @Override
@@ -46,11 +40,8 @@ public class Texts extends BaseItem {
         return NumberUtils.formatNumeric(value2);
     }
 
-    private void setValue1(String value1str) {
-        value1 = DateUtils.parseDate(value1str);
-    }
-
-    private void setValue2(String value2str) throws ParseException {
+    @Override
+    public void setValue2(String value2str) throws ParseException {
         value2 = NumberUtils.parseNumeric(value2str);
     }
 

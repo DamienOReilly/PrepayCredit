@@ -29,42 +29,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import com.actionbarsherlock.app.SherlockFragment;
+import android.support.v4.app.Fragment;
 import damo.three.ie.prepay.AccountProcessor;
 import damo.three.ie.prepay.UsageNotifier;
-import damo.three.ie.prepayusage.BaseItem;
+import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.prepayusage.InternetUsageRegistry;
+import damo.three.ie.prepayusage.UsageItem;
 import damo.three.ie.prepayusage.items.Data;
 import damo.three.ie.prepayusage.items.InternetAddon;
 import damo.three.ie.util.JSONUtils;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.text.ParseException;
 import java.util.List;
 
-public class AccountProcessorFragment extends SherlockFragment {
+/**
+ * Fragment which deals with initiating the fetching of users usages and reporting it back to the PrepayCreditActivity.
+ */
+public class AccountProcessorFragment extends Fragment {
 
     private Boolean working = false;
-    private List<BaseItem> items = null;
+    private List<UsageItem> items = null;
     private DateTime dateTimeNow = null;
     private SharedPreferences sharedPref = null;
-
-    /**
-     * Callback interface through which the fragment will report the task's
-     * progress and results back to the Activity.
-     */
-    public interface AccountProcessorListener {
-        void onAccountUsageReceived();
-
-        void onAccountUsageExceptionReceived(String exception);
-    }
-
     private AccountProcessorListener accountProcessorListener;
 
     /**
@@ -77,13 +68,12 @@ public class AccountProcessorFragment extends SherlockFragment {
         super.onAttach(activity);
 
         if (!(activity instanceof AccountProcessorListener)) {
-            throw new IllegalStateException(
-                    "Activity must implement AccountProcessorListener");
+            throw new IllegalStateException("Activity must implement AccountProcessorListener");
         }
 
         accountProcessorListener = (AccountProcessorListener) activity;
-        sharedPref = getSherlockActivity().getApplicationContext().getSharedPreferences(
-                "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
+        sharedPref = getActivity().getApplicationContext().getSharedPreferences("damo.three.ie.previous_usage",
+                Context.MODE_PRIVATE);
     }
 
     /**
@@ -117,26 +107,22 @@ public class AccountProcessorFragment extends SherlockFragment {
      * @throws CertificateException
      * @throws IOException
      */
-    public void execute() throws
-            KeyStoreException,
-            NoSuchAlgorithmException, CertificateException, IOException {
+    public void execute() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
         working = true;
         items = null;
         AccountProcessor accountProcessor = new AccountProcessor(this);
         accountProcessor.execute();
-
     }
 
     /**
      * Pass back exception to {@link damo.three.ie.activity.PrepayCreditActivity}
      *
-     * @param damn The exception to pass back
+     * @param exception The exception to pass back
      */
-    public void reportBackException(Throwable damn) {
+    public void reportBackException(Exception exception) {
         working = false;
         if (accountProcessorListener != null) {
-            accountProcessorListener.onAccountUsageExceptionReceived(damn
-                    .getLocalizedMessage());
+            accountProcessorListener.onAccountUsageExceptionReceived(exception);
         }
 
     }
@@ -148,20 +134,14 @@ public class AccountProcessorFragment extends SherlockFragment {
      */
     public void reportBackUsages(JSONArray usages) {
         working = false;
-        try {
-            /**
-             *  We got usages back successfully, so clear out usages from InternetUsageRegistry
-             *  before creating POJO's, as these may or may not add new entries.
-             */
-            if (usages.length() > 0) {
-                InternetUsageRegistry.getInstance().clear();
-            }
-            items = JSONUtils.jsonToBaseItems(usages);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        /**
+         *  We got usages back successfully, so clear out usages from InternetUsageRegistry
+         *  before creating POJO's, as these may or may not add new entries.
+         */
+        if (usages.length() > 0) {
+            InternetUsageRegistry.getInstance().clear();
         }
+        items = JSONUtils.jsonToUsageItems(usages);
 
         dateTimeNow = new DateTime();
 
@@ -176,7 +156,7 @@ public class AccountProcessorFragment extends SherlockFragment {
 
         /**
          * Check if reference to parent activity is null, if it is, app was closed,
-         * and Activity wasn'r re-created. i.e. user manually closed the app while fetching
+         * and Activity was not re-created. i.e. user manually closed the app while fetching
          * data
          **/
         if (accountProcessorListener != null) {
@@ -194,19 +174,21 @@ public class AccountProcessorFragment extends SherlockFragment {
         InternetUsageRegistry internetUsageRegistry = InternetUsageRegistry.getInstance();
 
         /* For each Internet add-on, add it to InternetUsageRegistry */
-        for (BaseItem b : items) {
+        for (UsageItem b : items) {
             if (b instanceof InternetAddon || b instanceof Data) {
                 /* Make sure it's not expired first */
-                if (b.isNotExpired()) {
-                    internetUsageRegistry.submit(b.getValue1().longValue());
+                if (((BasicUsageItem) b).isExpirable() && ((BasicUsageItem) b).isNotExpired()) {
+                    internetUsageRegistry.submit(((BasicUsageItem) b).getValue1().longValue());
                 }
             }
         }
 
-        AlarmManager am = (AlarmManager) getSherlockActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getSherlockActivity().getApplicationContext(), UsageNotifier.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                getSherlockActivity().getApplicationContext(), 0, intent,
+        AlarmManager am = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getActivity().getApplicationContext(), UsageNotifier.class);
+        // Add internet expire time to intent. We need this if the add-on expired while the phone was off.
+        // We will use this to determine the appropriate information to show the user.
+        intent.putExtra(InternetUsageRegistry.INTERNET_EXPIRE_TIME, internetUsageRegistry.getDateTime().getMillis());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(), 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (internetUsageRegistry.getDateTime() != null && notificationsEnabled) {
@@ -219,14 +201,12 @@ public class AccountProcessorFragment extends SherlockFragment {
              */
             DateTime internetExpires = internetUsageRegistry.getDateTime().minusHours(4);
             if (new DateTime().compareTo(internetExpires) < 0) {
-                am.set(AlarmManager.RTC_WAKEUP, internetExpires.getMillis(),
-                        pendingIntent);
+                am.set(AlarmManager.RTC_WAKEUP, internetExpires.getMillis(), pendingIntent);
             }
         } else {
             am.cancel(pendingIntent);
         }
     }
-
 
     /**
      * Provide a method to the activity to know if the ASync task is still working
@@ -241,7 +221,7 @@ public class AccountProcessorFragment extends SherlockFragment {
     /**
      * @return Usages
      */
-    public List<BaseItem> getItems() {
+    public List<UsageItem> getItems() {
         return items;
     }
 
@@ -250,6 +230,16 @@ public class AccountProcessorFragment extends SherlockFragment {
      */
     public DateTime getDateTime() {
         return dateTimeNow;
+    }
+
+    /**
+     * Callback interface through which the fragment will report the task's
+     * progress and results back to the Activity.
+     */
+    public interface AccountProcessorListener {
+        void onAccountUsageReceived();
+
+        void onAccountUsageExceptionReceived(Exception exception);
     }
 
 }

@@ -22,6 +22,7 @@
 
 package damo.three.ie.net;
 
+import damo.three.ie.prepay.Constants;
 import org.apache.http.HttpVersion;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -30,8 +31,6 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
 class ThreeHttpParameters {
-
-    private static final String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1-update1; en-gb; HTC Desire Build/ERE27) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
 
     /**
      * Default HttpParams to use with this application
@@ -42,18 +41,14 @@ class ThreeHttpParameters {
 
         HttpParams httpParameters = new BasicHttpParams();
 
-        final int timeoutSocket = 60 * 1000;
-        final int timeoutConnection = 60 * 1000;
+        final int timeoutSocket = 3 * 60 * 1000;
+        final int timeoutConnection = 3 * 60 * 1000;
 
-        HttpConnectionParams.setConnectionTimeout(httpParameters,
-                timeoutConnection);
+        HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
         HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
         HttpProtocolParams.setVersion(httpParameters, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(httpParameters, HTTP.UTF_8);
-        HttpProtocolParams.setUserAgent(httpParameters, USER_AGENT);
-
+        HttpProtocolParams.setUserAgent(httpParameters, Constants.USER_AGENT);
         return httpParameters;
-
     }
-
 }

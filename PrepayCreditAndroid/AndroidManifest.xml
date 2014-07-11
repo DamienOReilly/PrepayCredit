@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of Prepay Credit for Android
   ~
   ~ Copyright © 2013  Damien O'Reilly
@@ -21,67 +20,71 @@
   ~ Contact the author at:          damienreilly@gmail.com
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="damo.three.ie"
-          android:installLocation="auto"
-          android:versionCode="9"
-          android:versionName="0.9">
+<manifest
+    package="damo.three.ie"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:installLocation="auto"
+    android:versionCode="10"
+    android:versionName="0.10">
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="18"/>
+        android:targetSdkVersion="19" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_LOGS"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".PrepayCreditApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:logo="@drawable/ic_actionbar_icon"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:logo="@drawable/ic_actionbar_icon">
 
+        <activity
+            android:name=".activity.LoginActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.PrepayCreditActivity"
             android:label="@string/app_name"
             android:theme="@style/ActionBarCustom">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.SettingsActivity"
-            android:theme="@style/ActionBarCustom"/>
+            android:theme="@style/ActionBarCustom" />
         <activity
             android:name="org.acra.CrashReportDialog"
-            android:theme="@android:style/Theme.Dialog"
-            android:launchMode="singleInstance"
             android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"/>
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".activity.InternetExpirationActivity"
-            android:theme="@android:style/Theme.Dialog"
-            android:excludeFromRecents="true"/>
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".activity.AboutActivity"
             android:label="@string/about_activity_title"
-            android:theme="@style/ActionBarCustom"/>
+            android:theme="@style/ActionBarCustom" />
 
         <receiver
             android:name=".prepay.UsageNotifier"
-            android:enabled="true">
-        </receiver>
+            android:enabled="true"/>
         <receiver
             android:name=".prepay.PrepayAlarmManager"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

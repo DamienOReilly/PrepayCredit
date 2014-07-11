@@ -45,8 +45,7 @@ public class NumberUtils {
      * @return {@link String}
      */
     public static String formatFloat(Number input) {
-        return new DecimalFormat("#,##0.00").format(input
-                .floatValue());
+        return new DecimalFormat("#,##0.00").format(input.floatValue());
     }
 
     /**
@@ -57,8 +56,7 @@ public class NumberUtils {
      */
     public static String formatMoney(Number input) {
         // EURO symbol
-        return new DecimalFormat("\u20AC#,##0.00").format(input
-                .floatValue());
+        return new DecimalFormat("\u20AC#,##0.00").format(input.floatValue());
 
     }
 
@@ -72,7 +70,8 @@ public class NumberUtils {
         // We will use Locale.US on recommendation from:
         // Be wary of the default locale
         // http://developer.android.com/reference/java/util/Locale.html#default_locale
-        // otherwise devices with different locales e.g. Locale.FR expect number in different format. like 10,00 while we use 10.00
+        // otherwise devices with different locales e.g. Locale.FR expect number in different format.
+        // like 10,00 while we use 10.00
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('.');
         dfs.setGroupingSeparator(',');
@@ -90,11 +89,11 @@ public class NumberUtils {
         // We will use Locale.US on recommendation from:
         // Be wary of the default locale
         // http://developer.android.com/reference/java/util/Locale.html#default_locale
-        // otherwise devices with different locales e.g. Locale.FR expect number in different format. like 10,00 while we use 10.00
+        // otherwise devices with different locales e.g. Locale.FR expect number in different format.
+        // like 10,00 while we use 10.00
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('.');
         dfs.setGroupingSeparator(',');
         return new DecimalFormat("\u20AC#,###.##", dfs).parse(input);
     }
-
 }

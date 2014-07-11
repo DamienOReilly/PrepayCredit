@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of Prepay Credit for Android
   ~
   ~ Copyright © 2013  Damien O'Reilly
@@ -21,24 +20,32 @@
   ~ Contact the author at:          damienreilly@gmail.com
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:prepaycredit="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menuRefresh"
+        android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/refresh"
-        android:showAsAction="ifRoom"/>
+        prepaycredit:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menuSettings"
+        android:id="@+id/menu_settings"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/settings"
-        android:showAsAction="ifRoom"/>
+        android:showAsAction="never"
+        android:title="@string/settings" />
 
     <item
-        android:id="@+id/menuAbout"
-        android:icon="@drawable/ic_action_action_help_pre_honeycomb"
-        android:title="@string/about"
-        android:showAsAction="ifRoom"/>
+        android:id="@+id/menu_my3_website"
+        android:icon="@drawable/ic_action_web_site"
+        android:showAsAction="never"
+        android:title="@string/my3_website" />
+
+    <item
+        android:id="@+id/menu_about"
+        android:icon="@drawable/ic_action_help"
+        android:showAsAction="never"
+        android:title="@string/about" />
+
 
 </menu>

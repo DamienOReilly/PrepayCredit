@@ -24,7 +24,6 @@ package damo.three.ie.net;
 
 import android.content.Context;
 import damo.three.ie.R;
-import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -42,9 +41,12 @@ public class ThreeHttpClient {
 
     private static ThreeHttpClient threeHttpClient;
     private final Context context;
+    private DefaultHttpClient httpClient;
 
-    private ThreeHttpClient(Context context) {
+    private ThreeHttpClient(Context context) throws CertificateException, NoSuchAlgorithmException, KeyStoreException,
+            IOException {
         this.context = context;
+        setupHttpClient();
     }
 
     /**
@@ -53,7 +55,8 @@ public class ThreeHttpClient {
      * @param context Application context
      * @return ThreeHttpClient a reference to our HttpClient singleton
      */
-    public static ThreeHttpClient getInstance(Context context) {
+    public static ThreeHttpClient getInstance(Context context) throws CertificateException, NoSuchAlgorithmException,
+            KeyStoreException, IOException {
 
         if (threeHttpClient == null) {
             threeHttpClient = new ThreeHttpClient(context);
@@ -63,38 +66,36 @@ public class ThreeHttpClient {
     }
 
     /**
-     * return a reference to our HttpClient with custom SSLSocketFactory
+     * Setup our HttpClient with custom SSLSocketFactory
      *
-     * @return HttpClient
      * @throws KeyStoreException
      * @throws NoSuchAlgorithmException
      * @throws CertificateException
      * @throws IOException
      */
-    public HttpClient getHttpClient() throws KeyStoreException,
-            NoSuchAlgorithmException, CertificateException, IOException {
+    private void setupHttpClient() throws KeyStoreException, NoSuchAlgorithmException, CertificateException,
+            IOException {
 
         final KeyStore trusted = KeyStore.getInstance("BKS");
 
-        // I included a BKS keystore with secure.damienoreilly.org's cert and my3account.three.ie's Root Cert
+        // I included a BKS keystore with my3account.three.ie's Root Cert
         // some older android devices don't have these certs in their trust list.
-        final InputStream in = context.getResources()
-                .openRawResource(R.raw.my3);
+        final InputStream in = context.getResources().openRawResource(R.raw.my3);
         try {
-
             trusted.load(in, "damopass".toCharArray());
         } finally {
             in.close();
         }
 
         SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("https",
-                new EasySSLSocketFactory(trusted), 443));
+        registry.register(new Scheme("https", new EasySSLSocketFactory(trusted), 443));
 
-        ClientConnectionManager ccm = new ThreadSafeClientConnManager(
-                ThreeHttpParameters.getParameters(), registry);
+        ClientConnectionManager ccm = new ThreadSafeClientConnManager(ThreeHttpParameters.getParameters(), registry);
 
-        return new DefaultHttpClient(ccm, ThreeHttpParameters.getParameters());
+        httpClient = new DefaultHttpClient(ccm, ThreeHttpParameters.getParameters());
     }
 
+    public DefaultHttpClient getHttpClient() {
+        return httpClient;
+    }
 }

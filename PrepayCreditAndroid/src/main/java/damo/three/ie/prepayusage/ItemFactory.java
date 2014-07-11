@@ -23,55 +23,44 @@
 package damo.three.ie.prepayusage;
 
 import damo.three.ie.prepayusage.items.*;
+import damo.three.ie.util.PrepayException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 
+/**
+ * Our usage factory.
+ */
 public class ItemFactory {
-    /**
-     * Our usage factory.
-     *
-     * @param item {@link JSONObject} usage in JSON object form
-     * @return {@link BaseItem} usage object POJO
-     * @throws ParseException
-     * @throws JSONException
-     */
-    public static BaseItem createItem(JSONObject item) throws ParseException,
-            JSONException {
+
+    public static UsageItem createItem(JSONObject item) throws ParseException, JSONException, PrepayException {
 
         String type = item.getString("item");
-        BaseItem baseItem;
-        InternetUsageRegistry internetUsageRegistry = InternetUsageRegistry.getInstance();
+        UsageItem usage;
 
         if (type.equals("Free internet allowance")) {
-            baseItem = new Data(item.getString("value1"), item.getString("value2"));
+            usage = new Data(item.getString("value1"), item.getString("value2"));
         } else if (type.equals("Free Texts")) {
-            baseItem = new Texts(item.getString("value1"), item.getString("value2"));
+            usage = new Texts(item.getString("value1"), item.getString("value2"));
         } else if (type.equals("Talk and Text weekend minutes")) {
-            baseItem = new WeekendVoiceMinutes(item.getString("value1"),
-                    item.getString("value2"));
+            usage = new WeekendVoiceMinutes(item.getString("value1"), item.getString("value2"));
         } else if (type.equals("Free cash")) {
-            baseItem = new FreeCash(item.getString("value1"),
-                    item.getString("value2"));
+            usage = new FreeCash(item.getString("value1"), item.getString("value2"));
         } else if (type.equals("Internet Add-on")) {
-            baseItem = new InternetAddon(item.getString("value1"),
-                    item.getString("value2"));
-        } else if (type.equals("Internet")) {
-            baseItem = new OutOfBundle(item.getString("value1"),
-                    item.getString("value2"), item.getString("value3"));
+            usage = new InternetAddon(item.getString("value1"), item.getString("value2"));
+        } else if (type.startsWith("Internet")) {
+            usage = new OutOfBundle(item.getString("item"), item.getString("value1"), item.getString("value2"),
+                    item.getString("value3"));
         } else if (type.equals("Skype Calls")) {
-            baseItem = new SkypeCalls(item.getString("value1"),
-                    item.getString("value2"));
+            usage = new SkypeCalls(item.getString("value1"), item.getString("value2"));
         } else if (type.equals("3 to 3 Calls")) {
-            baseItem = new Three2ThreeCalls(item.getString("value1"),
-                    item.getString("value2"));
+            usage = new Three2ThreeCalls(item.getString("value1"), item.getString("value2"));
         } else if (type.equals("Top-up")) {
-            baseItem = new TopUp(item.getString("value1"), item.getString("value2"));
+            usage = new TopUp(item.getString("value1"), item.getString("value2"));
         } else {
-            baseItem = new Other(item.getString("value1"), item.getString("value2"));
+            throw new PrepayException("Unknown item: " + item.toString());
         }
-        return baseItem;
+        return usage;
     }
-
 }

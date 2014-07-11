@@ -27,78 +27,69 @@ import org.acra.ACRA;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class ProcessRequest {
 
-    private HttpClient httpClient = null;
-    private HttpResponse httpResponse;
-    private HttpEntity httpEntity;
-    private HttpUriRequest httpUriRequest = null;
+    private DefaultHttpClient httpClient = null;
 
     /**
-     * GET constructor
-     *
-     * @param httpClient {@link HttpClient}
-     * @param url        URL to GET
+     * @param httpClient HttpClient to perform requests with
      */
-    public ProcessRequest(HttpClient httpClient, String url) {
-        this.httpUriRequest = new HttpGet(url);
+    public ProcessRequest(DefaultHttpClient httpClient) {
         this.httpClient = httpClient;
-
-        httpResponse = null;
-        httpEntity = null;
     }
 
     /**
-     * POST constructor
+     * Returns HTML content of URL via GET
      *
-     * @param httpClient {@link HttpClient}
-     * @param url        URL to POST to
-     * @param nvp        Name, Value Pairs
-     * @throws UnsupportedEncodingException
-     */
-    public ProcessRequest(HttpClient httpClient, String url,
-                          List<NameValuePair> nvp) throws UnsupportedEncodingException {
-        this.httpClient = httpClient;
-        this.httpUriRequest = new HttpPost(url);
-        ((HttpEntityEnclosingRequestBase) this.httpUriRequest)
-                .setEntity(new UrlEncodedFormEntity(nvp, HTTP.UTF_8));
-
-        httpResponse = null;
-        httpEntity = null;
-    }
-
-    /**
-     * @return Returns resulting HTML of the request as string
+     * @param url URL to fetch
+     * @return Page contents
      * @throws IOException
      */
-    public String process() throws IOException {
+    public String process(String url) throws IOException {
+        HttpUriRequest httpUriRequest = new HttpGet(url);
+        return getString(httpUriRequest);
 
-        httpResponse = httpClient.execute(httpUriRequest);
-        httpEntity = httpResponse.getEntity();
+    }
+
+    /**
+     * Returns HTML content of URL via POST
+     *
+     * @param url URL to fetch
+     * @param nvp POST data
+     * @return Page contents
+     * @throws IOException
+     */
+    public String process(String url, List<NameValuePair> nvp) throws IOException {
+        HttpUriRequest httpUriRequest = new HttpPost(url);
+        ((HttpEntityEnclosingRequestBase) httpUriRequest).setEntity(new UrlEncodedFormEntity(nvp, HTTP.UTF_8));
+        return getString(httpUriRequest);
+    }
+
+    private String getString(HttpUriRequest httpUriRequest) throws IOException {
+        HttpResponse httpResponse = httpClient.execute(httpUriRequest);
+        HttpEntity httpEntity = httpResponse.getEntity();
 
         String pageContent = HtmlUtilities.getPageContent(httpEntity);
-        if (httpEntity != null)
+        if (httpEntity != null) {
             httpEntity.consumeContent();
+        }
 
-
-        // add current page content crash report logger incase application falls over. This is useful for
+        // add current page content crash report logger in-case application falls over. This is useful for
         // debugging logging in or parsing problems.
         // These pages don't contain the users credentials or other personal/sensitive information.
         ACRA.getErrorReporter().putCustomData("CURRENT_PAGE_CONTENT", pageContent);
         return pageContent;
-
     }
 
 }

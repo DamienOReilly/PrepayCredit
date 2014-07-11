@@ -33,7 +33,7 @@ import org.acra.sender.HttpSender.Type;
 // See https://github.com/ACRA/acra/wiki/BasicSetup and
 // https://github.com/ACRA/acralyzer/wiki/setup for more information.
 @ReportsCrashes(
-        excludeMatchingSharedPreferencesKeys={"mobile","password"}, // Don't report the user's credentials
+        excludeMatchingSharedPreferencesKeys = {"mobile", "password"}, // Don't report the user's credentials
         formKey = "", // This is required for backward compatibility but not used
         formUri = "https://damienoreilly.cloudant.com/acra-my3prepay-bug-reports/_design/acra-storage/_update/report",
         reportType = Type.JSON,

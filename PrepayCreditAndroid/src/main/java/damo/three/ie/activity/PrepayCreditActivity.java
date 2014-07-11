@@ -25,61 +25,61 @@ package damo.three.ie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.DisplayMetrics;
-import android.view.*;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.*;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import damo.three.ie.R;
 import damo.three.ie.fragment.AccountProcessorFragment;
-import damo.three.ie.prepayusage.AllBaseItemsGroupedAndSorted;
-import damo.three.ie.prepayusage.BaseItem;
-import damo.three.ie.prepayusage.OrganiseItems;
-import damo.three.ie.ui.InfoDialog;
-import damo.three.ie.ui.RegisterDialog;
-import damo.three.ie.ui.UpdatingView;
-import damo.three.ie.ui.UsageView;
+import damo.three.ie.prepay.Constants;
+import damo.three.ie.prepayusage.BasicUsageItem;
+import damo.three.ie.prepayusage.BasicUsageItemsGrouped;
+import damo.three.ie.prepayusage.UsageItem;
+import damo.three.ie.prepayusage.items.OutOfBundle;
+import damo.three.ie.ui.BasicUsageLayout;
+import damo.three.ie.ui.ExtendedScrollView;
+import damo.three.ie.ui.OutOfBundleLayout;
 import damo.three.ie.util.DateUtils;
 import damo.three.ie.util.JSONUtils;
+import damo.three.ie.util.PrepayException;
+import damo.three.ie.util.UsageUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.text.ParseException;
 import java.util.List;
 
-public class PrepayCreditActivity extends SherlockFragmentActivity implements
+public class PrepayCreditActivity extends ActionBarActivity implements
         AccountProcessorFragment.AccountProcessorListener {
 
-    private Boolean working = false;
-    private Boolean refreshedOnStart = false;
-    private Boolean refreshDoneSinceLoadingPersistedData = false;
-    private SharedPreferences sharedPreferences = null;
-    private UpdatingView updatingView = null;
-    private RelativeLayout parentView = null;
-    private LinearLayout baseUsageView = null;
-    private ScrollView scrollView = null;
-    private AccountProcessorFragment accountProcessorFragment = null;
-    private TextView lastRefreshed = null;
+    private boolean working = false;
+    private boolean refreshedOnStart = false;
+    private boolean refreshDoneSinceLoadingPersistedData = false;
+    private SharedPreferences sharedPreferences;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout baseUsageView;
+    private RelativeLayout errorLayout;
+    private ExtendedScrollView scrollView;
+    private AccountProcessorFragment accountProcessorFragment;
+    private TextView lastRefreshed;
 
     /**
-     * Called when the activity is first created or re-created due to
-     * configuration change. e.g. device rotation
+     * Called when the activity is first created or re-created due to configuration change. e.g. device rotation
      *
      * @param savedInstanceState Saved Bundle
      */
@@ -89,56 +89,65 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            refreshedOnStart = savedInstanceState.getBoolean(
-                    "refreshed_on_start", false);
-            refreshDoneSinceLoadingPersistedData = savedInstanceState
-                    .getBoolean("loaded_persisted_on_start", false);
-
+            refreshedOnStart = savedInstanceState.getBoolean("refreshed_on_start", false);
+            refreshDoneSinceLoadingPersistedData = savedInstanceState.getBoolean("loaded_persisted_on_start", false);
         }
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        setContentView(R.layout.main);
-        parentView = (RelativeLayout) findViewById(R.id.main);
-        lastRefreshed = (TextView) findViewById(R.id.textViewLastRefreshed);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.show();
+
+        setContentView(R.layout.main_usage_layout);
+        lastRefreshed = (TextView) findViewById(R.id.textview_last_refreshed);
+
+        errorLayout = (RelativeLayout) findViewById(R.id.error_layout);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(new OnSwipeRefreshLayoutListener());
+        swipeRefreshLayout.setColorScheme(R.color.holo_purple, R.color.holo_green_light, R.color.holo_orange_light,
+                R.color.holo_red_light);
+
+        scrollView = (ExtendedScrollView) findViewById(R.id.usage_scroll_view);
+        scrollView.setOnScrollViewListener(new ExtendedScrollView.OnScrollViewListener() {
+            @Override
+            public void onScrollChanged(ExtendedScrollView v, int l, int t, int oldl, int oldt) {
+                View view = scrollView.getChildAt(0);
+                // If we are at top of scrollview, enable the swipe refresh layout again, else keep disabled to prevent
+                // scrolling the scrollview triggering a refresh.
+                if (view.getTop() == scrollView.getScrollY()) {
+                    swipeRefreshLayout.setEnabled(true);
+                } else {
+                    swipeRefreshLayout.setEnabled(false);
+                }
+            }
+        });
+
+        baseUsageView = (LinearLayout) findViewById(R.id.usage_layout);
 
         // maybe user rotated the device and fragment already exists?
         FragmentManager fm = getSupportFragmentManager();
-        accountProcessorFragment = (AccountProcessorFragment) fm
-                .findFragmentByTag("usage_fetcher");
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(getResources().getDrawable(
-                R.drawable.actionbar));
-        actionBar.show();
+        accountProcessorFragment = (AccountProcessorFragment) fm.findFragmentByTag("usage_fetcher");
 
         if (accountProcessorFragment == null) {
             accountProcessorFragment = new AccountProcessorFragment();
-            fm.beginTransaction()
-                    .add(accountProcessorFragment, "usage_fetcher")
-                    .commitAllowingStateLoss(); /* consider that activity may be destroyed */
+            // consider that activity may be destroyed
+            fm.beginTransaction().add(accountProcessorFragment, "usage_fetcher").commitAllowingStateLoss();
         }
 
         // if we had already fetched usages, show them on the newly created activity
         if (accountProcessorFragment.getItems() != null) {
             displayUsages(accountProcessorFragment.getItems());
-            updateLastRefreshedTextView(DateUtils.formatDateTime(
-                    accountProcessorFragment.getDateTime().getMillis()));
+            updateLastRefreshedTextView(DateUtils.formatDateTime(accountProcessorFragment.getDateTime().getMillis()));
         }
         /**
-         * if screen was rotated and Activity was re-created while we were fetching
-         * usage info, then display loading screen now.
+         * if screen was rotated and Activity was re-created while we were fetching usage info, then enable the swipe
+         * refresh animation.
          */
         if (accountProcessorFragment.isWorking()) {
-            displayLoadingView(true);
+            swipeRefreshLayout.setRefreshing(true);
             working = true;
-        } else {
-            /**
-             * create the view anyway, otherwise the loading screen never shows
-             * after a rotation, but don't show it yet.
-             */
-            displayLoadingView(false);
         }
     }
 
@@ -147,31 +156,20 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
 
         super.onResume();
 
-        boolean firstrun = sharedPreferences.getBoolean("firstrun", true);
-        if (firstrun) {
-            showInfoDialog();
-        }
-
         /**
-         * If previous usage info was persisted, show it, unless we are
-         * currently retrieving new usages.
-         * If we refreshed usages since opening app, then don't fall in
-         * here as we will get the usages from our AccountProcessorFragment
-         * in onCreate() instead.
+         * If previous usage info was persisted, show it. If we refreshed usages since opening app, then don't fall in
+         * here as we will get the usages from our AccountProcessorFragment in onCreate() instead.
          */
-        if (!refreshDoneSinceLoadingPersistedData && !working) {
+        if (!refreshDoneSinceLoadingPersistedData) {
             loadPersistedUsages();
         }
+
         /**
          * refresh usage on startup ?
-         * check if we already refreshed. Activity is re-created each
-         * rotate, so checked persisted value we stored
+         * Check if we already refreshed. Activity is re-created each rotate, so checked persisted value we stored
          * onSaveInstanceState()
          */
-
-        if ((sharedPreferences.getBoolean("refresh", false))
-                && (!refreshedOnStart)) {
-
+        if ((sharedPreferences.getBoolean("refresh", false)) && (!refreshedOnStart)) {
             getCreditInfo();
             refreshedOnStart = true;
         }
@@ -181,24 +179,18 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
      * Load usages if we have them persisted.
      */
     private void loadPersistedUsages() {
-        SharedPreferences sharedPref = getSharedPreferences(
-                "damo.three.ie.previous_usage", Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences("damo.three.ie.previous_usage", Context.MODE_PRIVATE);
         String usage = sharedPref.getString("usage_info", null);
         // first check if anything was persisted
         if (usage != null) {
             try {
-                List<BaseItem> baseItems = JSONUtils
-                        .jsonToBaseItems(new JSONArray(usage));
+                List<UsageItem> usageItems = JSONUtils.jsonToUsageItems(new JSONArray(usage));
                 // check array size in-case it was just an empty json string stored
-                if (baseItems.size() > 0) {
-                    updateLastRefreshedTextView(DateUtils.formatDateTime(sharedPref.getLong(
-                            "last_refreshed_milliseconds", 0L)));
-                    displayUsages(baseItems);
-
+                if (usageItems.size() > 0) {
+                    updateLastRefreshedTextView(DateUtils.formatDateTime(sharedPref.getLong
+                            ("last_refreshed_milliseconds", 0L)));
+                    displayUsages(usageItems);
                 }
-
-            } catch (ParseException e) {
-                e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -218,6 +210,7 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
 
     /**
      * Activity is going down. Save data that we want to reload when the activity is re-created.
+     *
      * @param outState State to be saved
      */
     @Override
@@ -229,161 +222,83 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
     }
 
     /**
-     * Setup the menu for the ActionBar. If there is no room for all menu icon's, they will
-     * either go to the overflow menu, or if on pre-honeycomb, the old menu.
+     * Setup the action icon's for the ActionBar.
+     *
      * @param menu Menu
      * @return boolean
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    /**
-     * Normally on Pre HoneyComb, overflow icons from ActionBar go into the old menu with
-     * grey icon with transparent background. However if device is rotated, icons can
-     * fit on the ActionBar. These should be white with a bit of opacity to match the
-     * other icons that always fit on the action bar. This situation needs to be handled via code.
-     * http://stackoverflow.com/a/12139512
-     *
-     * @param menu Menu
-     * @return boolean
-     */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        MenuItem search = menu.findItem(R.id.menuAbout);
-        DisplayMetrics metrics = new DisplayMetrics();
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        overrideGetSize(display, size);
-        display.getMetrics(metrics);
-        float logicalDensity = metrics.density;
-
-        int dp = (int) (size.x / logicalDensity + 0.5);
-
-        if (dp < 360) { // only two icons
-            search.setIcon(R.drawable.ic_action_action_help_pre_honeycomb);  // Show menu icon for pre-3.0 menu
-        } else {
-            search.setIcon(R.drawable.ic_action_action_help); // Show action bar icon for action bar
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Get display size in a compatible way from Android 2.1+ onwards
-     * http://stackoverflow.com/a/10660288
-     *
-     * @param display Dispplay
-     * @param outSize Point
-     */
-    @SuppressWarnings("deprecation")
-    private void overrideGetSize(Display display, Point outSize) {
-        try {
-            // test for new method to trigger exception
-            Class pointClass = Class.forName("android.graphics.Point");
-            Method newGetSize = Display.class.getMethod("getSize", new Class[]{pointClass});
-
-            // no exception, so new method is available, just use it
-            newGetSize.invoke(display, outSize);
-        } catch (NoSuchMethodException ex) {
-            // new method is not available, use the old depreciated ones
-            outSize.x = display.getWidth();
-            outSize.y = display.getHeight();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.menuRefresh:
+            case R.id.menu_refresh:
                 if (!working) {
                     getCreditInfo();
                 }
                 return true;
 
-            case R.id.menuSettings:
+            case R.id.menu_settings:
                 /**
                  * Needed as once off. If user enables refresh on start, refresh
                  * would happen when they close SettingsActivity as onResume() here
-                 * is called as son as user closes SettingsActivity
+                 * is called as soon as user closes SettingsActivity
                  */
-                refreshedOnStart = true;
+                //refreshedOnStart = true;
                 Intent settings = new Intent(this, SettingsActivity.class);
                 startActivity(settings);
                 return true;
 
-            case R.id.menuAbout:
+            case R.id.menu_about:
                 Intent about = new Intent(this, AboutActivity.class);
                 startActivity(about);
                 return true;
 
+            case R.id.menu_my3_website:
+                goToMy3Website();
 
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void goToMy3Website() {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(Constants.MY3_MAIN_PAGE));
+        startActivity(i);
+    }
+
     /**
      * Initiate the request to get users usage information
      */
     private void getCreditInfo() {
-
-        if (!(sharedPreferences.getString("mobile", "").equals(""))
-                && !(sharedPreferences.getString("password", "")).equals("")) {
-
+        if (sharedPreferences.getString("mobile", "").equals("") ||
+                sharedPreferences.getString("password", "").equals("")) {
+            showWarning(getString(R.string.no_account_credentials));
+        } else {
             working = true;
-            displayLoadingView(true);
+            clearErrorLayout();
+            if (!swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(true);
+            }
             try {
                 accountProcessorFragment.execute();
             } catch (KeyStoreException e) {
-                showNotification(e.getLocalizedMessage());
-                e.printStackTrace();
+                showCriticalError(e);
             } catch (NoSuchAlgorithmException e) {
-                showNotification(e.getLocalizedMessage());
-                e.printStackTrace();
+                showCriticalError(e);
             } catch (CertificateException e) {
-                showNotification(e.getLocalizedMessage());
-                e.printStackTrace();
+                showCriticalError(e);
             } catch (IOException e) {
-                showNotification(e.getLocalizedMessage());
-                e.printStackTrace();
+                showCriticalError(e);
             }
-
-        } else {
-            showRegisterDialog();
         }
-    }
-
-    /**
-     * Alert the user that this app can communicate via an intermediate server.
-     * It's possible they may not want this functionality active if they don't
-     * trust my server.
-     */
-    private void showInfoDialog() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        SherlockDialogFragment dialog = new InfoDialog();
-        dialog.show(ft, "dialog");
-    }
-
-    /**
-     * User has no username or password entered.
-     */
-    private void showRegisterDialog() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        SherlockDialogFragment dialog = new RegisterDialog();
-        dialog.show(ft, "dialog");
     }
 
     /**
@@ -392,16 +307,13 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
     @Override
     public void onAccountUsageReceived() {
 
-        List<BaseItem> usageItems = accountProcessorFragment.getItems();
+        List<UsageItem> usageItems = accountProcessorFragment.getItems();
 
         if (usageItems != null) {
-            updateLastRefreshedTextView(DateUtils.formatDateTime(
-                    accountProcessorFragment.getDateTime().getMillis()));
+            updateLastRefreshedTextView(DateUtils.formatDateTime(accountProcessorFragment.getDateTime().getMillis()));
             displayUsages(usageItems);
-
         }
-        displayLoadingView(false);
-
+        swipeRefreshLayout.setRefreshing(false);
         working = false;
     }
 
@@ -411,61 +323,70 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
      * @param exception Exception from fetching usages
      */
     @Override
-    public void onAccountUsageExceptionReceived(String exception) {
-        displayLoadingView(false);
+    public void onAccountUsageExceptionReceived(Exception exception) {
         working = false;
-        showNotification(exception);
-        /** there was an error fetching usages, just show the last persisted usage info, as it
-         * may not already be displayed, Usually this is the case if user auto refreshes on
-         * app startup, or device config changed while fetching a usage.
-         */
-        loadPersistedUsages();
+        swipeRefreshLayout.setRefreshing(false);
+        if ((exception instanceof IOException) || (exception instanceof PrepayException)) {
+            showCriticalError(exception);
+        } else {
+            showWarning(exception);
+        }
     }
 
     /**
-     * Show the error to the user
-     *
-     * @param exception Exception message
+     * Show an message. Message shows until user exits it, or refreshes again.
      */
-    private void showNotification(String exception) {
-
-        LayoutInflater inflater = getLayoutInflater();
-        // Inflate the Layout
-        View layout = inflater.inflate(R.layout.toast,
-                (ViewGroup) findViewById(R.id.toastLayout));
-
-        TextView text = (TextView) layout.findViewById(R.id.toastTextView);
-        // Set the Text to show in TextView
-        text.setText("Error: " + exception);
-        Toast toast = new Toast(getApplicationContext());
-        toast.getView();
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(layout);
-        toast.show();
+    private void showCriticalError(Exception exception) {
+        String msg = String.format(getString(R.string.my3_connection_error), exception.getLocalizedMessage());
+        setupErrorLayout(msg, new OnErrorCloseClickListener(), View.VISIBLE, new OnErrorLayoutClickListener(), 0);
     }
 
     /**
-     * just show a spinning {@link ProgressBar} while we are waiting for result.
+     * Setup an error layout based on supplied criteria.
      *
-     * @param paramBoolean Show/Hide ProgressBar
+     * @param msg                        Message to show.
+     * @param imgButtonOnClickListener   OnClickListener when user clicks X button. Supply null for no action.
+     * @param imgButtonVisible           Close button is visible or not.
+     * @param errorLayoutOnClickListener OnClickListener when user clicks layout. Supply null for no action.
+     * @param duration                   Duration (in seconds) for the layout to retain on screen before disappearing.
+     *                                   Use 0 to disable.
      */
-    private void displayLoadingView(boolean paramBoolean) {
+    private void setupErrorLayout(String msg, View.OnClickListener imgButtonOnClickListener, int imgButtonVisible,
+                                  View.OnClickListener errorLayoutOnClickListener, int duration) {
+        TextView errorTextView = (TextView) findViewById(R.id.error_text);
+        errorTextView.setText(msg);
+        ImageButton imageButton = (ImageButton) errorLayout.findViewById(R.id.error_close_button);
+        imageButton.setOnClickListener(imgButtonOnClickListener);
+        imageButton.setVisibility(imgButtonVisible);
+        errorLayout.setOnClickListener(errorLayoutOnClickListener);
+        errorLayout.setVisibility(View.VISIBLE);
 
-        if (updatingView == null) {
-            updatingView = new UpdatingView(getBaseContext());
-            parentView.addView(updatingView, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        if (duration > 0) {
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    clearErrorLayout();
+                }
+            };
+            handler.removeCallbacks(runnable);
+            handler.postDelayed(runnable, 5 * 1000);
         }
+    }
 
-        if (parentView != null) {
-            if (paramBoolean) {
-                updatingView.setVisibility(View.VISIBLE);
-                updatingView.bringToFront();
-            } else {
-                updatingView.setVisibility(View.GONE);
-            }
-        }
+    /**
+     * Show a warning message. Behaviour is to disappear after a few seconds.
+     */
+    private void showWarning(String msg) {
+        setupErrorLayout(msg, null, View.INVISIBLE, null, 5);
+    }
+
+    private void showWarning(Exception exception) {
+        showWarning(exception.getLocalizedMessage());
+    }
+
+    private void clearErrorLayout() {
+        errorLayout.setVisibility(View.GONE);
     }
 
     /**
@@ -473,57 +394,67 @@ public class PrepayCreditActivity extends SherlockFragmentActivity implements
      *
      * @param usageItems Usages Retrieved
      */
-    private void displayUsages(List<BaseItem> usageItems) {
-
-        if (scrollView == null) {
-            scrollView = new ScrollView(this);
-
-            // add the ScrollView to the top of the RelativeLayout, but do not overlap the lastRefreshed TextView
-            RelativeLayout.LayoutParams scrollViewLayoutParams = new
-                    RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            parentView.addView(scrollView, scrollViewLayoutParams);
-            RelativeLayout.LayoutParams relativeLayoutParameters =
-                    (RelativeLayout.LayoutParams) scrollView.getLayoutParams();
-            relativeLayoutParameters.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            relativeLayoutParameters.addRule(RelativeLayout.ABOVE, lastRefreshed.getId());
-        }
-
-        if (baseUsageView == null) {
-
-            baseUsageView = new LinearLayout(this);
-            baseUsageView.setOrientation(LinearLayout.VERTICAL);
-            scrollView.addView(baseUsageView, new ScrollView.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        }
-
+    private void displayUsages(List<UsageItem> usageItems) {
         if (usageItems != null) {
 
             baseUsageView.removeAllViews();
-            baseUsageView.setVisibility(View.GONE);
 
-            List<AllBaseItemsGroupedAndSorted> allBaseItemsGroupedAndSorted = new OrganiseItems(
-                    usageItems).groupUsages();
+            // Out of bundle items
+            List<OutOfBundle> outOfBundleItems = UsageUtils.getAllOutOfBundleItems(usageItems);
+            if (outOfBundleItems.size() > 0) {
+                OutOfBundleLayout outOfBundleLayout = new OutOfBundleLayout(this, outOfBundleItems);
+                baseUsageView.addView(outOfBundleLayout);
+            }
 
-            if (allBaseItemsGroupedAndSorted != null) {
-
-                for (AllBaseItemsGroupedAndSorted b : allBaseItemsGroupedAndSorted) {
-
-                    /**
-                     * check if usage is already expired (cached usages maybe no-longer
-                     * relevant if the user hasn't refreshed in some time).
-                     * TODO: should really clean up persisted cache if we find an expired entry.
-                     */
-                    if (b.isNotExpired()) {
-                        UsageView l = new UsageView(getBaseContext(), b);
-                        baseUsageView.addView(l);
-                    }
-
+            // Basic usage items
+            List<BasicUsageItem> basicUsageItems = UsageUtils.getAllBasicItems(usageItems);
+            List<BasicUsageItemsGrouped> basicUsageItemsGrouped = UsageUtils.groupUsages(basicUsageItems);
+            for (BasicUsageItemsGrouped b : basicUsageItemsGrouped) {
+                /**
+                 * check if usage is already expired (cached usages maybe no-longer relevant if the user hasn't
+                 * refreshed in some time).
+                 */
+                if (b.isNotExpired()) {
+                    BasicUsageLayout l = new BasicUsageLayout(getBaseContext(), b);
+                    baseUsageView.addView(l);
                 }
+            }
+            refreshDoneSinceLoadingPersistedData = true;
+        }
+    }
 
-                baseUsageView.setVisibility(View.VISIBLE);
-                refreshDoneSinceLoadingPersistedData = true;
+    /**
+     * Listener class. Action to perform when the error layout is clicked.
+     */
+    private class OnErrorLayoutClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            errorLayout.setVisibility(View.GONE);
+            goToMy3Website();
+        }
+    }
+
+    /**
+     * Listener class. Action to perform when the user 'swipes' down to refresh.
+     */
+    private class OnSwipeRefreshLayoutListener implements SwipeRefreshLayout.OnRefreshListener {
+
+        @Override
+        public void onRefresh() {
+            if (!working) {
+                getCreditInfo();
             }
         }
     }
 
+    /**
+     * Listener class. Action to perform when the close button on error layout is clicked.
+     */
+    private class OnErrorCloseClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            errorLayout.setVisibility(View.GONE);
+        }
+    }
 }

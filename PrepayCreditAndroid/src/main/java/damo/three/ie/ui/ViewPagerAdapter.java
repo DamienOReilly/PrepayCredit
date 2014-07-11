@@ -28,10 +28,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import damo.three.ie.fragment.AboutFragment;
 import damo.three.ie.fragment.ChangeLogFragment;
 
+/**
+ * Class allows swiping between fragments in the 'About' section.
+ */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
-
-    // Declare the number of ViewPager pages
-    private final int PAGE_COUNT = 2;
 
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -51,7 +51,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return PAGE_COUNT;
+        return 2;
     }
 
 }

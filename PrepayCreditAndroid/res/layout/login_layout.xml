@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ This file is part of Prepay Credit for Android
+  ~
+  ~ Copyright © 2014  Damien O'Reilly
+  ~
+  ~ Prepay Credit for Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~ Prepay Credit for Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Report bugs or new features at: https://github.com/DamienOReilly/PrepayCredit
+  ~ Contact the author at:          damienreilly@gmail.com
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/actionbar_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:id="@+id/login_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/mobile_number"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:hint="@string/mobile_number"
+            android:inputType="number"
+            android:singleLine="true"
+            android:textColor="@color/dark_blue"
+            android:textColorHint="@color/light_blue" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:textColor="@color/dark_blue"
+            android:textColorHint="@color/light_blue" />
+
+        <Button
+            android:id="@+id/continue_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/darker_blue_button"
+            android:text="@string/continue_button"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/forgot_password_textview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.5"
+            android:gravity="left|center"
+            android:text="@string/forgot_password_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/register_textview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.5"
+            android:gravity="right|center"
+            android:text="@string/register_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/sim_iccid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/ic_action_copy"
+            android:contentDescription="@string/sim_iccid_desc"
+            android:gravity="center"
+            android:text="@string/sim_iccid"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

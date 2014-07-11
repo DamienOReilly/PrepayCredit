@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of Prepay Credit for Android
   ~
   ~ Copyright © 2013  Damien O'Reilly
@@ -23,27 +22,13 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Theme for the Sherlock ActionBar -->
-    <style name="ActionBarCustom" parent="Theme.Sherlock">
-        <item name="android:actionBarStyle">@style/ActionBarCustom.ActionBarStyle</item>
-        <item name="actionBarStyle">@style/ActionBarCustom.ActionBarStyle</item>
+    <style name="ActionBarCustom" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
     </style>
 
-    <style name="ActionBarCustom.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar">
-        <item name="android:titleTextStyle">@style/ActionBarCustom.ActionBar.TitleTextStyle</item>
-        <item name="titleTextStyle">@style/ActionBarCustom.ActionBar.TitleTextStyle</item>
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <style name="ActionBarCustom.ActionBar.TitleTextStyle" parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <style name="Spinner">
-        <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateDrawable">@drawable/spinner</item>
-        <item name="android:indeterminateDuration">2000</item>
-        <item name="android:indeterminateOnly">true</item>
+    <style name="Widget.Styled.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@drawable/actionbar_background</item>
+        <item name="backgroundStacked">@color/dark_blue</item>
     </style>
 
     <!-- Activity to alert the user about their internet add-on expiring -->
@@ -62,13 +47,12 @@
         <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_margin">3dp</item>
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">2</item>
     </style>
-
 
 </resources>
