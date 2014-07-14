@@ -21,18 +21,59 @@
 
 package damo.three.ie.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import com.github.machinarius.preferencefragment.PreferenceFragment;
 import damo.three.ie.R;
+import damo.three.ie.net.ThreeHttpClient;
+
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 /**
  * @author Damien O'Reilly
  */
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
+    }
+
+    @Override
+    public void onResume() {
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+
+    /**
+     * If the user changes credentials, clear the http cookies, as if the http cookies are still valid, they won't login
+     * with the new credentials until the current cookies expire or are no longer valid.
+     */
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if ((key.equals("mobile") || key.equals("password"))) {
+            try {
+                ThreeHttpClient.getInstance(getActivity()).getHttpClient().getCookieStore().clear();
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
