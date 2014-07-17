@@ -37,6 +37,22 @@ import java.util.List;
 public class JSONUtils {
 
     /**
+     * Convert our usages in JSON string representation to objects.
+     *
+     * @param jsonStringArray Usages in JSON string format
+     * @return {@link List<damo.three.ie.prepayusage.UsageItem>}
+     */
+    public static List<UsageItem> jsonToUsageItems(String jsonStringArray) {
+        List<UsageItem> usageItems = null;
+        try {
+            usageItems = jsonToUsageItems(new JSONArray(jsonStringArray));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return usageItems;
+    }
+
+    /**
      * Convert our usages in JSON representation to objects.
      *
      * @param jsonArray Usages in JSON format

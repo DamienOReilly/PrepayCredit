@@ -63,5 +63,6 @@
     <string name="close">close</string>
     <string name="internet_expiring_summary">According to your last refresh on: %1$s, your latest internet add-on is due to expire at midnight tonight.\n\nNote, if you topped-up or bought add-on since your last refresh, this information may no longer be relevant.</string>
     <string name="internet_expired_summary">According to your last refresh on: %1$s, your latest internet add-on has EXPIRED.\n\nif you topped-up or bought add-on since your last refresh, this information may no longer be relevant.</string>
+    <string name="backgroundupdate">backgroundupdate</string>
 
 </resources>

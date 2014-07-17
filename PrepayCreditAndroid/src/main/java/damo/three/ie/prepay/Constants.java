@@ -38,4 +38,7 @@ public class Constants {
 
     public static final String REGISTER_URL = "https://my3account.three.ie/Sign_up";
     public static final String FORGOT_PASS_URL = "https://my3account.three.ie/Forgotten_password";
+
+    public static final int HOUR_TO_UPDATE = 10;
+    public static final int HOUR_TO_RETRY = 19;
 }

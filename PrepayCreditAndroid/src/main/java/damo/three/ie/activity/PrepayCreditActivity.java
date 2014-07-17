@@ -42,7 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import damo.three.ie.R;
-import damo.three.ie.fragment.AccountProcessorFragment;
+import damo.three.ie.fragment.UpdateFragment;
 import damo.three.ie.prepay.Constants;
 import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.prepayusage.BasicUsageItemsGrouped;
@@ -55,8 +55,6 @@ import damo.three.ie.util.DateUtils;
 import damo.three.ie.util.JSONUtils;
 import damo.three.ie.util.PrepayException;
 import damo.three.ie.util.UsageUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -65,7 +63,7 @@ import java.security.cert.CertificateException;
 import java.util.List;
 
 public class PrepayCreditActivity extends ActionBarActivity implements
-        AccountProcessorFragment.AccountProcessorListener {
+        UpdateFragment.AccountProcessorListener {
 
     private boolean working = false;
     private boolean refreshedOnStart = false;
@@ -75,7 +73,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
     private LinearLayout baseUsageView;
     private RelativeLayout errorLayout;
     private ExtendedScrollView scrollView;
-    private AccountProcessorFragment accountProcessorFragment;
+    private UpdateFragment updateFragment;
     private TextView lastRefreshed;
 
     /**
@@ -95,6 +93,10 @@ public class PrepayCreditActivity extends ActionBarActivity implements
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Register or clear background update alarms depending if they are enabled or not.
+        boolean backgroundUpdate = sharedPreferences.getBoolean(getString(R.string.backgroundupdate), true);
+        UsageUtils.setupBackgroundUpdateAlarms(getApplicationContext(), backgroundUpdate);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.show();
@@ -128,24 +130,24 @@ public class PrepayCreditActivity extends ActionBarActivity implements
 
         // maybe user rotated the device and fragment already exists?
         FragmentManager fm = getSupportFragmentManager();
-        accountProcessorFragment = (AccountProcessorFragment) fm.findFragmentByTag("usage_fetcher");
+        updateFragment = (UpdateFragment) fm.findFragmentByTag("usage_fetcher");
 
-        if (accountProcessorFragment == null) {
-            accountProcessorFragment = new AccountProcessorFragment();
+        if (updateFragment == null) {
+            updateFragment = new UpdateFragment();
             // consider that activity may be destroyed
-            fm.beginTransaction().add(accountProcessorFragment, "usage_fetcher").commitAllowingStateLoss();
+            fm.beginTransaction().add(updateFragment, "usage_fetcher").commitAllowingStateLoss();
         }
 
         // if we had already fetched usages, show them on the newly created activity
-        if (accountProcessorFragment.getItems() != null) {
-            displayUsages(accountProcessorFragment.getItems());
-            updateLastRefreshedTextView(DateUtils.formatDateTime(accountProcessorFragment.getDateTime().getMillis()));
+        if (updateFragment.getItems() != null) {
+            displayUsages(updateFragment.getItems());
+            updateLastRefreshedTextView(DateUtils.formatDateTime(updateFragment.getDateTime().getMillis()));
         }
         /**
          * if screen was rotated and Activity was re-created while we were fetching usage info, then enable the swipe
          * refresh animation.
          */
-        if (accountProcessorFragment.isWorking()) {
+        if (updateFragment.isWorking()) {
             swipeRefreshLayout.setRefreshing(true);
             working = true;
         }
@@ -183,16 +185,12 @@ public class PrepayCreditActivity extends ActionBarActivity implements
         String usage = sharedPref.getString("usage_info", null);
         // first check if anything was persisted
         if (usage != null) {
-            try {
-                List<UsageItem> usageItems = JSONUtils.jsonToUsageItems(new JSONArray(usage));
-                // check array size in-case it was just an empty json string stored
-                if (usageItems.size() > 0) {
-                    updateLastRefreshedTextView(DateUtils.formatDateTime(sharedPref.getLong
-                            ("last_refreshed_milliseconds", 0L)));
-                    displayUsages(usageItems);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            List<UsageItem> usageItems = JSONUtils.jsonToUsageItems(usage);
+            // check array size in-case it was just an empty json string stored
+            if (usageItems != null && usageItems.size() > 0) {
+                updateLastRefreshedTextView(DateUtils.formatDateTime(sharedPref.getLong
+                        ("last_refreshed_milliseconds", 0L)));
+                displayUsages(usageItems);
             }
         }
     }
@@ -288,7 +286,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
                 swipeRefreshLayout.setRefreshing(true);
             }
             try {
-                accountProcessorFragment.execute();
+                updateFragment.execute();
             } catch (KeyStoreException e) {
                 showCriticalError(e);
             } catch (NoSuchAlgorithmException e) {
@@ -307,10 +305,10 @@ public class PrepayCreditActivity extends ActionBarActivity implements
     @Override
     public void onAccountUsageReceived() {
 
-        List<UsageItem> usageItems = accountProcessorFragment.getItems();
+        List<UsageItem> usageItems = updateFragment.getItems();
 
         if (usageItems != null) {
-            updateLastRefreshedTextView(DateUtils.formatDateTime(accountProcessorFragment.getDateTime().getMillis()));
+            updateLastRefreshedTextView(DateUtils.formatDateTime(updateFragment.getDateTime().getMillis()));
             displayUsages(usageItems);
         }
         swipeRefreshLayout.setRefreshing(false);

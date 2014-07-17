@@ -52,6 +52,11 @@
             android:key="refresh"
             android:summary="Will refresh your usage immediately when you open the application."
             android:title="Refresh usage on application startup." />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/backgroundupdate"
+            android:summary="Attempt to refresh usage once a day in background. (Recommended to catch expiring internet-addons to help prevent out-of-bundle charges)"
+            android:title="Refresh usage daily." />
     </PreferenceCategory>
 
     <PreferenceCategory

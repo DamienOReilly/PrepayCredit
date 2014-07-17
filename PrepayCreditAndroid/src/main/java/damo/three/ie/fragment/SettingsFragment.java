@@ -21,11 +21,14 @@
 
 package damo.three.ie.fragment;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import com.github.machinarius.preferencefragment.PreferenceFragment;
 import damo.three.ie.R;
 import damo.three.ie.net.ThreeHttpClient;
+import damo.three.ie.util.UsageUtils;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -37,14 +40,32 @@ import java.security.cert.CertificateException;
  */
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private Context context;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
+
+        // Add functionality to the background-update checkbox to enable/disable alarms.
+        Preference updateDailyPref = findPreference(getString(R.string.backgroundupdate));
+        updateDailyPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (getPreferenceManager().getSharedPreferences().getBoolean(getString(R.string.backgroundupdate),
+                        false)) {
+                    UsageUtils.setupBackgroundUpdateAlarms(context, true);
+                } else {
+                    UsageUtils.setupBackgroundUpdateAlarms(context, false);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
     public void onResume() {
+        context = getActivity().getApplicationContext();
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
