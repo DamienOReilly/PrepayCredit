@@ -24,8 +24,6 @@
     <color name="darker_blue">#ff165094</color>
     <color name="dark_blue">#ff006990</color>
     <color name="light_blue">#ff3ecbff</color>
-    <color name="orange">#ffffb84d</color>
-    <color name="red">#ffff3300</color>
     <color name="layout_background">#e5e5e5</color>
 
     <color name="holo_purple">#ffaa66cc</color>

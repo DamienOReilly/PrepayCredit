@@ -50,9 +50,9 @@ public class BasicUsageLayout extends LinearLayout {
 
         // Color it if necessary
         if (basicUsageItemsGrouped.getExpireGroupType() == ExpireGroupType.WARNING) {
-            groupTitle.setTextColor(getResources().getColor(R.color.orange));
+            groupTitle.setTextColor(getResources().getColor(R.color.holo_orange_light));
         } else if (basicUsageItemsGrouped.getExpireGroupType() == ExpireGroupType.BAD) {
-            groupTitle.setTextColor(getResources().getColor(R.color.red));
+            groupTitle.setTextColor(getResources().getColor(R.color.holo_red_light));
         }
         groupTitle.setText(basicUsageItemsGrouped.getExpireGroup());
 
