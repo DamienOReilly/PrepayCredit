@@ -92,6 +92,8 @@ public class JSONUtils {
                 } catch (PrepayException e) {
                     problemOccurred = true;
                     ex = e;
+                } catch (IllegalArgumentException e) {
+                    // Used to catch out-of-bundle usages pre-upgrade that are incompatible with this version.
                 }
             }
             if (problemOccurred) {
