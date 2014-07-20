@@ -27,7 +27,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.util.Date;
 import java.util.List;
 
 /**
