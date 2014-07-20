@@ -1,10 +1,10 @@
 # Prepay Credit for Android
 [![Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=damo.three.ie)
 [![F-Droid](https://f-droid.org/wiki/images/c/c4/F-Droid-button_available-on.png)](https://f-droid.org/repository/browse/?fdid=damo.three.ie)
-
-**NOTE:** This application, nor its author is not affiliated with Hutchison 3G Ireland.
-**NOTE:** These applications are for 3 Ireland Prepay users only.
-
+  
+**NOTE:** This application, nor its author is not affiliated with Hutchison 3G Ireland.  
+**NOTE:** These applications are for 3 Ireland Prepay users only.  
+  
 This application will fetch and display your My3 usage information (For 3 Ireland 3Pay users). Usage information is grouped and sorted. This application will work when you are on 3's GSM network and also when on Wi-Fi.
 Please note, https://my3account.three.ie is AWFUL slow. It can have a knock on effect on this application.
 
@@ -69,9 +69,9 @@ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/
   https://github.com/Machinarius/PreferenceFragment-Compat  
   Apache License v2: https://github.com/Machinarius/PreferenceFragment-Compat/blob/master/LICENSE
   
-* prettytime
+* prettytime  
   http://ocpsoft.org/prettytime/  
-  https://github.com/ocpsoft/prettytime/blob/master/LICENSE  
+  Apache License v2: https://github.com/ocpsoft/prettytime/blob/master/LICENSE  
   
 * Phone handset logo  
   Creative Commons Attribution 3.0  
