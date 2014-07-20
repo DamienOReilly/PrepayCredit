@@ -79,7 +79,6 @@ public class UpdateFragment extends Fragment {
 
         /* prevents us holding onto an activity which has been destroyed. Should stop potential memory leak */
         accountProcessorListener = null;
-        usageSharedPref = null;
     }
 
     /**
