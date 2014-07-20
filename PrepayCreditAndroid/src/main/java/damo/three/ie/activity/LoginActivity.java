@@ -31,10 +31,7 @@ import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.text.ClipboardManager;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import damo.three.ie.R;
 import damo.three.ie.prepay.Constants;
 
@@ -86,8 +83,11 @@ public class LoginActivity extends Activity {
         continueButton.setOnClickListener(loginClickListener);
 
         // To register or request lost password, 3 wants the last 6 digits from the SIM's ICCID. For convenience, we
-        // will display it to the user.
+        // will display it to the user. But only if ICCID is available. Non SIM tablets won't have this.
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        LinearLayout iccidLayout = (LinearLayout) findViewById(R.id.iccid_layout);
+        iccidLayout.setVisibility(View.VISIBLE);
+
         iccid = tm.getSimSerialNumber();
         if (iccid != null && (iccid.length() >= 6)) {
             iccid = iccid.substring(iccid.length() - 6);

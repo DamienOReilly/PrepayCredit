@@ -37,12 +37,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import damo.three.ie.R;
 import damo.three.ie.fragment.UpdateFragment;
+import damo.three.ie.net.ThreeHttpClient;
 import damo.three.ie.prepay.Constants;
 import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.prepayusage.BasicUsageItemsGrouped;
@@ -55,8 +53,13 @@ import damo.three.ie.util.DateUtils;
 import damo.three.ie.util.JSONUtils;
 import damo.three.ie.util.PrepayException;
 import damo.three.ie.util.UsageUtils;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.Date;
 import java.util.List;
 
 public class PrepayCreditActivity extends ActionBarActivity implements
@@ -66,6 +69,8 @@ public class PrepayCreditActivity extends ActionBarActivity implements
     private boolean refreshedOnStart = false;
     private boolean refreshDoneSinceLoadingPersistedData = false;
     private SharedPreferences sharedPreferences;
+    private SharedPreferences usageSharedPreferences;
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout baseUsageView;
     private RelativeLayout errorLayout;
@@ -90,6 +95,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        usageSharedPreferences = getSharedPreferences("damo.three.ie.previous_usage", Context.MODE_PRIVATE);
 
         // Register or clear background update alarms depending if they are enabled or not.
         boolean backgroundUpdate = sharedPreferences.getBoolean(getString(R.string.backgroundupdate), true);
@@ -100,6 +106,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
 
         setContentView(R.layout.main_usage_layout);
         lastRefreshed = (TextView) findViewById(R.id.textview_last_refreshed);
+        lastRefreshed.setOnClickListener(new OnLastRefreshedTextViewClickListener());
 
         errorLayout = (RelativeLayout) findViewById(R.id.error_layout);
 
@@ -138,7 +145,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
         // if we had already fetched usages, show them on the newly created activity
         if (updateFragment.getItems() != null) {
             displayUsages(updateFragment.getItems());
-            updateLastRefreshedTextView(DateUtils.formatDateTime(updateFragment.getDateTime().getMillis()));
+            updateLastRefreshedTextView(new PrettyTime().format(new Date((updateFragment.getDateTime().getMillis()))));
         }
         /**
          * if screen was rotated and Activity was re-created while we were fetching usage info, then enable the swipe
@@ -178,15 +185,14 @@ public class PrepayCreditActivity extends ActionBarActivity implements
      * Load usages if we have them persisted.
      */
     private void loadPersistedUsages() {
-        SharedPreferences sharedPref = getSharedPreferences("damo.three.ie.previous_usage", Context.MODE_PRIVATE);
-        String usage = sharedPref.getString("usage_info", null);
+        String usage = usageSharedPreferences.getString("usage_info", null);
         // first check if anything was persisted
         if (usage != null) {
             List<UsageItem> usageItems = JSONUtils.jsonToUsageItems(usage);
             // check array size in-case it was just an empty json string stored
             if (usageItems != null && usageItems.size() > 0) {
-                updateLastRefreshedTextView(DateUtils.formatDateTime(sharedPref.getLong
-                        ("last_refreshed_milliseconds", 0L)));
+                updateLastRefreshedTextView(new PrettyTime().format(new Date((usageSharedPreferences.getLong
+                        ("last_refreshed_milliseconds", 0L)))));
                 displayUsages(usageItems);
             }
         }
@@ -199,7 +205,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
      */
     private void updateLastRefreshedTextView(String last) {
         // non line breaking space appended to the end to prevent last italic char been clipped
-        lastRefreshed.setText("Last refreshed: " + last + "\u00A0");
+        lastRefreshed.setText("Last refreshed " + last + "\u00A0");
         lastRefreshed.setVisibility(View.VISIBLE);
     }
 
@@ -258,9 +264,41 @@ public class PrepayCreditActivity extends ActionBarActivity implements
             case R.id.menu_my3_website:
                 goToMy3Website();
 
+            case R.id.menu_logout:
+                logOut();
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    // Clear credentials, stored usage info, cookies and go back to login screen.
+    private void logOut() {
+        SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
+        sharedPrefsEditor.remove("mobile");
+        sharedPrefsEditor.remove("password");
+        sharedPrefsEditor.commit();
+
+        SharedPreferences.Editor usageSharedPrefsEditor = usageSharedPreferences.edit();
+        usageSharedPrefsEditor.remove("last_refreshed_milliseconds");
+        usageSharedPrefsEditor.remove("usage_info");
+        usageSharedPrefsEditor.commit();
+
+        try {
+            ThreeHttpClient.getInstance(getApplicationContext()).getHttpClient().getCookieStore().clear();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void goToMy3Website() {
@@ -295,7 +333,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
         List<UsageItem> usageItems = updateFragment.getItems();
 
         if (usageItems != null) {
-            updateLastRefreshedTextView(DateUtils.formatDateTime(updateFragment.getDateTime().getMillis()));
+            updateLastRefreshedTextView(new PrettyTime().format(new Date(updateFragment.getDateTime().getMillis())));
             displayUsages(usageItems);
         }
         swipeRefreshLayout.setRefreshing(false);
@@ -440,6 +478,18 @@ public class PrepayCreditActivity extends ActionBarActivity implements
         @Override
         public void onClick(View v) {
             errorLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private class OnLastRefreshedTextViewClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            long lastRefreshed = usageSharedPreferences.getLong("last_refreshed_milliseconds", 0L);
+            if (lastRefreshed > 0) {
+                Toast.makeText(getApplicationContext(), "Last refreshed on " + DateUtils.formatDateTime
+                        (lastRefreshed), Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

@@ -25,7 +25,9 @@ package damo.three.ie.prepayusage;
 import damo.three.ie.util.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.ocpsoft.prettytime.PrettyTime;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,14 +80,7 @@ public class BasicUsageItemsGrouped implements Comparable<BasicUsageItemsGrouped
             }
 
             expireGroup = "Expires: " + DateUtils.formatDate(date);
-
-            if (daysRemaining == 0) {
-                expireGroup += " (Midnight)";
-            } else if (daysRemaining == 1) {
-                expireGroup += " (Tomorrow)";
-            } else {
-                expireGroup += " (in " + daysRemaining + " days)";
-            }
+            expireGroup += " (" + new PrettyTime().format(new Date(date)) + ")";
         }
     }
 

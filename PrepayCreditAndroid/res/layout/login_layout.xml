@@ -44,6 +44,7 @@
             android:background="@android:drawable/editbox_background_normal"
             android:hint="@string/mobile_number"
             android:inputType="number"
+            android:padding="15dp"
             android:singleLine="true"
             android:textColor="@color/dark_blue"
             android:textColorHint="@color/light_blue" />
@@ -57,6 +58,7 @@
             android:background="@android:drawable/editbox_background_normal"
             android:hint="@string/password"
             android:inputType="textPassword"
+            android:padding="15dp"
             android:singleLine="true"
             android:textColor="@color/dark_blue"
             android:textColorHint="@color/light_blue" />
@@ -69,6 +71,7 @@
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
             android:background="@drawable/darker_blue_button"
+            android:padding="15dp"
             android:text="@string/continue_button"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
@@ -109,12 +112,13 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/iccid_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/sim_iccid"

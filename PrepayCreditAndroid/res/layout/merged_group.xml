@@ -21,7 +21,8 @@
   ~ Contact the author at:          damienreilly@gmail.com
   -->
 
-<LinearLayout android:id="@+id/merged_group_container"
+<LinearLayout
+    android:id="@+id/merged_group_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
