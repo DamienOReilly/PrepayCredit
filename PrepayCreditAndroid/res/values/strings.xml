@@ -31,8 +31,6 @@
 
     <!-- My3 app -->
     <string name="app_name">Prepay Credit</string>
-    <string name="login_dialog_close">Close</string>
-    <string name="login_dialog_title">My3 Login details needed…</string>
     <string name="settings">Settings</string>
     <string name="refresh">Refresh</string>
     <string name="crash_dialog_comment_prompt">You can add any further information you may want below:</string>

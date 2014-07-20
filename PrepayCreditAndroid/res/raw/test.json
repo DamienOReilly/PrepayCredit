@@ -5,6 +5,11 @@
         "item": "3 to 3 Calls"
 },
 {
+        "value1": "Expires 17/07/14",
+        "value2": "153.38",
+        "item": "Internet Add-on"
+},
+{
         "value1": "Expires 29/07/14",
         "value2": "2,999",
         "item": "Talk and Text weekend minutes"
@@ -16,12 +21,37 @@
 },
 {
         "value1": "Expires 29/07/14",
+        "value2": "2,096,128",
+        "item": "Free internet allowance"
+},
+{
+        "value1": "Expires 29/07/14",
         "value2": "2,989",
         "item": "Free Texts"
 },
 {
         "value1": "Won't expire**",
         "value2": "€18.59",
+        "item": "Top-up"
+},
+{
+        "value1": "Won't expire**",
+        "value2": "€5.24",
+        "item": "Top-up"
+},
+{
+        "value1": "Won't expire**",
+        "value2": "€20.00",
+        "item": "Top-up"
+},
+{
+        "value1": "Won't expire**",
+        "value2": "€10.00",
+        "item": "Top-up"
+},
+{
+        "value1": "Won't expire**",
+        "value2": "€5.00",
         "item": "Top-up"
 },
 {

@@ -57,9 +57,6 @@ import damo.three.ie.util.PrepayException;
 import damo.three.ie.util.UsageUtils;
 
 import java.io.IOException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 public class PrepayCreditActivity extends ActionBarActivity implements
@@ -285,17 +282,7 @@ public class PrepayCreditActivity extends ActionBarActivity implements
             if (!swipeRefreshLayout.isRefreshing()) {
                 swipeRefreshLayout.setRefreshing(true);
             }
-            try {
-                updateFragment.execute();
-            } catch (KeyStoreException e) {
-                showCriticalError(e);
-            } catch (NoSuchAlgorithmException e) {
-                showCriticalError(e);
-            } catch (CertificateException e) {
-                showCriticalError(e);
-            } catch (IOException e) {
-                showCriticalError(e);
-            }
+            updateFragment.execute();
         }
     }
 

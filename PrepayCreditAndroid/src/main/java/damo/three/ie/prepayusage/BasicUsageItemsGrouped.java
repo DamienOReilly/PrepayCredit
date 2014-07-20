@@ -54,7 +54,7 @@ public class BasicUsageItemsGrouped implements Comparable<BasicUsageItemsGrouped
      * Add some meta-data to the usage groups.
      */
     private void updateGroupName() {
-        long date = basicUsageItems.get(0).getValue1().longValue();
+        long date = basicUsageItems.get(0).getExpireDate();
         if (date == DateUtils.WONT_EXPIRE) {
             expireGroup = "Won't expire";
             expireGroupType = ExpireGroupType.GOOD;

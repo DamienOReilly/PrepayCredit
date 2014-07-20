@@ -26,23 +26,44 @@ import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.util.NumberUtils;
 
 import java.text.ParseException;
+import java.util.List;
 
 public class FreeCash extends BasicUsageItem {
 
-    public FreeCash(String value1str, String value2str) throws ParseException {
+    private float quantity;
+
+    public FreeCash(String dateExpireStr, String quantitySt) throws ParseException {
         super("Free Cash");
-        setValue1(value1str);
-        setValue2(value2str);
+        setExpireDate(dateExpireStr);
+        setQuantityFormatted(quantitySt);
     }
 
     @Override
-    public String getValue2formatted() {
-        return NumberUtils.formatMoney(value2);
+    public String getQuantityFormatted() {
+        return getQuantityFormatted(quantity);
     }
 
     @Override
-    public void setValue2(String value2str) throws ParseException {
-        value2 = NumberUtils.parseMoney(value2str);
+    public void setQuantityFormatted(String quantitySt) throws ParseException {
+        quantity = NumberUtils.parseMoney(quantitySt).floatValue();
     }
 
+    @Override
+    public Number getQuantity() {
+        return quantity;
+    }
+
+    private String getQuantityFormatted(float i) {
+        return NumberUtils.formatMoney(i);
+    }
+
+    @Override
+    public String mergeQuantity(List<Number> toSum) {
+        long i = 0;
+        for (Number a : toSum) {
+            i += a.longValue();
+        }
+
+        return getQuantityFormatted(i);
+    }
 }

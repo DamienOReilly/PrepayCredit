@@ -36,10 +36,6 @@ import damo.three.ie.util.UsageUtils;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 
-import java.io.IOException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 /**
@@ -98,13 +94,8 @@ public class UpdateFragment extends Fragment {
 
     /**
      * Kick off the Usage fetcher.
-     *
-     * @throws KeyStoreException
-     * @throws NoSuchAlgorithmException
-     * @throws CertificateException
-     * @throws IOException
      */
-    public void execute() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+    public void execute() {
         working = true;
         items = null;
         UpdateAsyncTask updateAsyncTask = new UpdateAsyncTask(this);

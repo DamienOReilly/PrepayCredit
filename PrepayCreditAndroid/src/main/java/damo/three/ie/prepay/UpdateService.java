@@ -46,8 +46,6 @@ import java.util.List;
  */
 public class UpdateService extends IntentService {
 
-    private Context context;
-
     public UpdateService() {
         super("PrepayUpdateService");
     }
@@ -55,7 +53,7 @@ public class UpdateService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        context = getApplicationContext();
+        Context context = getApplicationContext();
         try {
             Log.d(Constants.TAG, "Fetching usages from service.");
             UsageFetcher usageFetcher = new UsageFetcher(context, true);

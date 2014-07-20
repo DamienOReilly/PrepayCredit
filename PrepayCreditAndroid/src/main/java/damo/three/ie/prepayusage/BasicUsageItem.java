@@ -25,36 +25,36 @@ import damo.three.ie.util.DateUtils;
 import org.joda.time.DateTime;
 
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * Class to handle basic usage items. Quantity & expire date
  *
  * @author Damien O'Reilly
  */
-public abstract class BasicUsageItem extends UsageItem implements Comparable<BasicUsageItem> {
+public abstract class BasicUsageItem extends UsageItem {
 
-    protected Number value2;
-    private Number value1;
+    private long expireDate;
 
     protected BasicUsageItem(String itemName) {
         super(itemName);
     }
 
-    public String getValue1formatted() {
-        return DateUtils.formatDate(value1);
+    public long getExpireDate() {
+        return expireDate;
     }
 
-    public Number getValue1() {
-        return value1;
+    protected void setExpireDate(String expireDateStr) {
+        expireDate = DateUtils.parseDate(expireDateStr);
     }
 
-    protected void setValue1(String value1str) {
-        value1 = DateUtils.parseDate(value1str);
-    }
+    public abstract String getQuantityFormatted();
 
-    public abstract String getValue2formatted();
+    public abstract void setQuantityFormatted(String quantityStr) throws ParseException;
 
-    public abstract void setValue2(String value2str) throws ParseException;
+    public abstract Number getQuantity();
+
+    public abstract String mergeQuantity(List<Number> toSum);
 
     /**
      * Just a method to check whether the usage item is expired past current date.
@@ -64,7 +64,7 @@ public abstract class BasicUsageItem extends UsageItem implements Comparable<Bas
     public boolean isNotExpired() {
         DateTime now = new DateTime().withTimeAtStartOfDay();
         // +1 day as they expire at 00:00:00am of the next day really.
-        return new DateTime(value1.longValue()).plusDays(1).withTimeAtStartOfDay().compareTo(now) > 0;
+        return new DateTime(expireDate).plusDays(1).withTimeAtStartOfDay().compareTo(now) > 0;
     }
 
     /**
@@ -75,19 +75,29 @@ public abstract class BasicUsageItem extends UsageItem implements Comparable<Bas
      * @return boolean
      */
     public boolean isExpirable() {
-        return value1.longValue() != DateUtils.WONT_EXPIRE;
+        return expireDate != DateUtils.WONT_EXPIRE;
     }
 
     /**
-     * Comparison, used for grouping of {@code BasicUsageItem} based on expire date.
+     * Comparison, used for grouping of {@code BasicUsageItem} based on expire date only.
      *
-     * @param that BaseUsageItem to compare against
-     * @return Comparison result.
+     * @param o To compare against.
+     * @return True of equal, otherwise false.
      */
-    @Override
-    public int compareTo(BasicUsageItem that) {
-        return this.getValue1().longValue() > that.getValue1().longValue() ? 1 : this.getValue1().longValue() < that
-                .getValue1().longValue() ? -1 : 0;
+    public int dateEquals(Object o) {
+        BasicUsageItem that = (BasicUsageItem) o;
+        return this.getExpireDate() > that.getExpireDate() ? 1 : this.getExpireDate() < that.getExpireDate() ? -1 : 0;
     }
 
+    /**
+     * Comparison, used for grouping of {@code BasicUsageItem} based on item type only.
+     *
+     * @param o To compare against.
+     * @return True of equal, otherwise false.
+     */
+    @Override
+    public boolean equals(Object o) {
+        BasicUsageItem that = (BasicUsageItem) o;
+        return this.getItemName().equals(that.getItemName());
+    }
 }

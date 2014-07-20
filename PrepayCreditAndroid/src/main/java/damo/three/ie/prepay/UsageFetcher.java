@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 /**
  * @author Damien O'Reilly
  */
-public class UsageFetcher {
+class UsageFetcher {
 
     private String pageContent = null;
     private JSONArray jsonArray = null;

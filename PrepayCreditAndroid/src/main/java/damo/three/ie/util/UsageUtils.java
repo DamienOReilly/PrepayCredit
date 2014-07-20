@@ -29,10 +29,7 @@ import android.util.Log;
 import damo.three.ie.prepay.Constants;
 import damo.three.ie.prepay.InternetAddonExpireReceiver;
 import damo.three.ie.prepay.UpdateReceiver;
-import damo.three.ie.prepayusage.BasicUsageItem;
-import damo.three.ie.prepayusage.BasicUsageItemsGrouped;
-import damo.three.ie.prepayusage.InternetUsageRegistry;
-import damo.three.ie.prepayusage.UsageItem;
+import damo.three.ie.prepayusage.*;
 import damo.three.ie.prepayusage.items.Data;
 import damo.three.ie.prepayusage.items.InternetAddon;
 import damo.three.ie.prepayusage.items.OutOfBundle;
@@ -68,26 +65,26 @@ public class UsageUtils {
      */
     public static List<BasicUsageItemsGrouped> groupUsages(List<BasicUsageItem> basicUsageItems) {
 
+        // Sort the items, based on expire time
+        BasicUsageItemExpireSorter basicUsageItemExpireSorter = new BasicUsageItemExpireSorter();
+        Collections.sort(basicUsageItems, new BasicUsageItemExpireSorter());
+
+        // Get the unique item types, based on expire time.
+        SortedSet<BasicUsageItem> basicUsageItemCommonsSet = new TreeSet<BasicUsageItem>(basicUsageItemExpireSorter);
+        basicUsageItemCommonsSet.addAll(basicUsageItems);
+
         List<BasicUsageItemsGrouped> basicUsageItemsGrouped = new ArrayList<BasicUsageItemsGrouped>();
 
-        // Sort the items
-        Collections.sort(basicUsageItems);
-
-        // Get the unique item types
-        SortedSet<BasicUsageItem> basicUsageItemCommonsSet = new TreeSet<BasicUsageItem>(basicUsageItems);
-
+        //Group items of the same type into their own group (this is based on same expire date).
         List<BasicUsageItem> tmpBasicUsageItems;
-
-        //Group items of the same type into their own group.
         for (BasicUsageItem a : basicUsageItemCommonsSet) {
             tmpBasicUsageItems = new ArrayList<BasicUsageItem>();
 
             for (BasicUsageItem b : basicUsageItems) {
-                if (a.compareTo(b) == 0) {
+                if (a.dateEquals(b) == 0) {
                     tmpBasicUsageItems.add(b);
                 }
             }
-
             basicUsageItemsGrouped.add(new BasicUsageItemsGrouped(tmpBasicUsageItems));
         }
 
@@ -129,7 +126,7 @@ public class UsageUtils {
             if (b instanceof InternetAddon || b instanceof Data) {
                 /* Make sure it's not expired first */
                 if (b.isExpirable() && b.isNotExpired()) {
-                    internetUsageRegistry.submit(b.getValue1().longValue());
+                    internetUsageRegistry.submit(b.getExpireDate());
                 }
             }
         }
@@ -184,11 +181,14 @@ public class UsageUtils {
             Log.d(Constants.TAG, "Setting up repeating UpdateReceiver alarms. (UsageUtils)");
             Calendar calendar = Calendar.getInstance();
             // Schedule alarm for refreshing as normal.
+            if (calendar.get(Calendar.HOUR_OF_DAY) >= Constants.HOUR_TO_UPDATE) {
+                // Starting tomorrow
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+            }
             calendar.set(Calendar.HOUR_OF_DAY, Constants.HOUR_TO_UPDATE);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
-            // Starting tomorrow
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
+
             am.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY,
                     pendingIntent);
         } else {

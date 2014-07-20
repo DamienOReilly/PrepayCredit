@@ -113,7 +113,6 @@ public class UpdateAlarmManagerReceiver extends BroadcastReceiver {
      * @param lastRefresh Last refresh time in milliseconds.
      * @return True if refresh is to be done, otherwise false.
      */
-
     private boolean noRefreshDoneToday(Calendar calendarNow, long lastRefresh) {
         Calendar calendarLastRefreshed = Calendar.getInstance();
         calendarLastRefreshed.setTimeInMillis(lastRefresh);

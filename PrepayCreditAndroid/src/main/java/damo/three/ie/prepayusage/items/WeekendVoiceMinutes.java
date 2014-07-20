@@ -26,23 +26,44 @@ import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.util.NumberUtils;
 
 import java.text.ParseException;
+import java.util.List;
 
 public class WeekendVoiceMinutes extends BasicUsageItem {
 
-    public WeekendVoiceMinutes(String value1str, String value2str) throws ParseException {
+    private long quantity;
+
+    public WeekendVoiceMinutes(String dateExpireStr, String quantityStr) throws ParseException {
         super("Weekend Voice Minutes");
-        setValue1(value1str);
-        setValue2(value2str);
+        setExpireDate(dateExpireStr);
+        setQuantityFormatted(quantityStr);
     }
 
     @Override
-    public String getValue2formatted() {
-        return NumberUtils.formatNumeric(value2);
+    public String getQuantityFormatted() {
+        return getQuantityFormatted(quantity);
     }
 
     @Override
-    public void setValue2(String value2str) throws ParseException {
-        value2 = NumberUtils.parseNumeric(value2str);
+    public void setQuantityFormatted(String quantityStr) throws ParseException {
+        quantity = NumberUtils.parseNumeric(quantityStr).longValue();
     }
 
+    @Override
+    public Number getQuantity() {
+        return quantity;
+    }
+
+    private String getQuantityFormatted(long i) {
+        return NumberUtils.formatNumeric(i);
+    }
+
+    @Override
+    public String mergeQuantity(List<Number> toSum) {
+        long i = 0;
+        for (Number a : toSum) {
+            i += a.longValue();
+        }
+
+        return getQuantityFormatted(i);
+    }
 }

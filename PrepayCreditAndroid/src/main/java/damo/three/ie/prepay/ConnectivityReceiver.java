@@ -53,7 +53,7 @@ public class ConnectivityReceiver extends WakefulBroadcastReceiver {
     /**
      * Disables ConnectivityReceiver
      */
-    public static void disableReceiver(Context context) {
+    private static void disableReceiver(Context context) {
         ComponentName component = new ComponentName(context, ConnectivityReceiver.class);
         context.getPackageManager().setComponentEnabledSetting(component,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);

@@ -37,6 +37,19 @@ import java.util.List;
 public class JSONUtils {
 
     /**
+     * Converts JSON array as string into JSON array object. Silently handling any parse exceptions.
+     */
+    public static JSONArray jsonStringArraytoJsonArray(String jsonStringArray) {
+        JSONArray usageItems = null;
+        try {
+            usageItems = new JSONArray(jsonStringArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return usageItems;
+    }
+
+    /**
      * Convert our usages in JSON string representation to objects.
      *
      * @param jsonStringArray Usages in JSON string format

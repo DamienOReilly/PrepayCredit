@@ -26,23 +26,47 @@ import damo.three.ie.prepayusage.BasicUsageItem;
 import damo.three.ie.util.NumberUtils;
 
 import java.text.ParseException;
+import java.util.List;
 
 public class Data extends BasicUsageItem {
 
-    public Data(String value1str, String value2str) throws ParseException {
+    private float quantity;
+
+    public Data(String dateExpireStr, String quantityStr) throws ParseException {
         super("Data");
-        setValue1(value1str);
-        setValue2(value2str);
+        setExpireDate(dateExpireStr);
+        setQuantityFormatted(quantityStr);
     }
 
     @Override
-    public String getValue2formatted() {
-        return NumberUtils.formatFloat(value2.floatValue() / 1024) + "GB";
+    public String getQuantityFormatted() {
+        return getQuantityFormatted(quantity);
     }
 
     @Override
-    public void setValue2(String value2str) throws ParseException {
-        value2 = NumberUtils.parseNumeric(value2str);
+    public void setQuantityFormatted(String quantityStr) throws ParseException {
+        quantity = NumberUtils.parseNumeric(quantityStr).floatValue();
     }
 
+    @Override
+    public Number getQuantity() {
+        return quantity;
+    }
+
+    private String getQuantityFormatted(float i) {
+        if (i < 1024) {
+            return NumberUtils.formatFloat(i) + " MB";
+        }
+        return NumberUtils.formatNumeric(i / 1024) + " GB";
+    }
+
+    @Override
+    public String mergeQuantity(List<Number> toSum) {
+        float i = 0;
+        for (Number a : toSum) {
+            i += a.floatValue();
+        }
+
+        return getQuantityFormatted(i);
+    }
 }

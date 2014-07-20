@@ -34,9 +34,9 @@ import org.json.JSONArray;
 public class UpdateAsyncTask extends AsyncTask<Void, Void, JSONArray> {
 
     private final UpdateFragment updateFragment;
-    private Context context;
+    private final Context context;
+    private final JSONArray jsonArray = null;
     private Exception exception = null;
-    private JSONArray jsonArray = null;
 
 
     /**
@@ -67,9 +67,11 @@ public class UpdateAsyncTask extends AsyncTask<Void, Void, JSONArray> {
      */
     @Override
     protected JSONArray doInBackground(Void... arg0) {
+        JSONArray jsonArray = new JSONArray();
         try {
             UsageFetcher usageFetcher = new UsageFetcher(context, false);
             jsonArray = usageFetcher.getUsages();
+            // For testing
             //return JSONUtils.jsonStringArraytoJsonArray(FileUtils.readFile(context, R.raw.test));
         } catch (Exception e) {
             exception = e;
