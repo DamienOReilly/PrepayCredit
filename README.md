@@ -61,13 +61,17 @@ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/
   http://hc.apache.org/httpcomponents-client-ga/index.html  
   Apache License v2: http://www.apache.org/licenses/LICENSE-2.0.txt  
 
-* ACRA  
+* Application Crash Reporting for Android  
   http://acra.ch/  
   Apache License v2: https://github.com/ACRA/acra/blob/master/LICENSE  
   
 * PreferenceFragment-Compat  
   https://github.com/Machinarius/PreferenceFragment-Compat  
-  Apache License v2: https://github.com/ACRA/acra/blob/master/LICENSE  
+  Apache License v2: https://github.com/Machinarius/PreferenceFragment-Compat/blob/master/LICENSE
+  
+* prettytime
+  http://ocpsoft.org/prettytime/  
+  https://github.com/ocpsoft/prettytime/blob/master/LICENSE  
   
 * Phone handset logo  
   Creative Commons Attribution 3.0  
