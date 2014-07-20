@@ -80,7 +80,7 @@ public class BasicUsageItemsGrouped implements Comparable<BasicUsageItemsGrouped
             }
 
             expireGroup = "Expires: " + DateUtils.formatDate(date);
-            expireGroup += " (" + new PrettyTime().format(new Date(date)) + ")";
+            expireGroup += " (" + new PrettyTime().format(getAbsoluteExpireyDateTime().toDate()) + ")";
         }
     }
 
