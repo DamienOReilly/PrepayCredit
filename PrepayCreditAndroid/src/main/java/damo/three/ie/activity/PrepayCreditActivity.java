@@ -263,9 +263,11 @@ public class PrepayCreditActivity extends ActionBarActivity implements
 
             case R.id.menu_my3_website:
                 goToMy3Website();
+                return true;
 
             case R.id.menu_logout:
                 logOut();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
