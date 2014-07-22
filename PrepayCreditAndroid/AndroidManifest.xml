@@ -24,8 +24,8 @@
     package="damo.three.ie"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto"
-    android:versionCode="13"
-    android:versionName="0.11">
+    android:versionCode="14"
+    android:versionName="0.12">
 
     <uses-sdk
         android:minSdkVersion="7"
