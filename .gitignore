@@ -1,4 +1,6 @@
-#Android/J EE specific
+#Android/Java specific
+target
+build
 bin
 gen
 gen-external-apklibs
@@ -11,8 +13,10 @@ release.properties
 *.apk
 
 #Maven
-target
-pom.xml.*
+pom.xml
+
+#Gradle
+.gradle
 
 #Eclipse
 .project

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Prepay Credit for Android
+  ~
+  ~ Copyright © 2013  Damien O'Reilly
+  ~
+  ~ Prepay Credit for Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Prepay Credit for Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Report bugs or new features at: https://github.com/DamienOReilly/PrepayCredit
+  ~ Contact the author at:          damienreilly@gmail.com
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:summary="My3 PrePay Credentials"
+        android:title="Login information">
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="number"
+            android:key="mobile"
+            android:summary="@string/mobile_number"
+            android:title="Mobile number" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textPassword"
+            android:key="password"
+            android:summary="@string/password"
+            android:title="Password" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:summary="Settings"
+        android:title="Settings">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="notification"
+            android:summary="Notification will be triggered 4 hours before the latest data/internet add-on is about to expire."
+            android:title="Notification when data/internet add-on is about to expire." />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="refresh"
+            android:summary="Will refresh your usage immediately when you open the application."
+            android:title="Refresh usage on application startup." />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/backgroundupdate"
+            android:summary="Attempt to refresh usage once a day in background. (Recommended to catch expiring internet-addons to help prevent out-of-bundle charges)"
+            android:title="Refresh usage daily." />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:summary="Enable crash report logging to help me fix bugs"
+        android:title="Crash Report Logging">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="acra.enable"
+            android:summaryOff="Disabled"
+            android:summaryOn="Enabled"
+            android:title="Enable Crash Report Logging" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="acra.syslog.enable"
+            android:summaryOff="Disabled"
+            android:summaryOn="Enabled"
+            android:title="Include system logs" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="acra.deviceid.enable"
+            android:summaryOff="Disabled"
+            android:summaryOn="Enabled"
+            android:title="Include Device ID" />
+
+        <EditTextPreference
+            android:inputType="textEmailAddress"
+            android:key="acra.user.email"
+            android:summary="Include email address in reports if you want to help me with bugs"
+            android:title="Include email address in reports" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="acra.alwaysaccept"
+            android:summaryOff="Disabled"
+            android:summaryOn="Enabled"
+            android:title="Auto-accept sending reports" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

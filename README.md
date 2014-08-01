@@ -10,17 +10,14 @@ Please note, https://my3account.three.ie is AWFUL slow. It can have a knock on e
 
 This application needs your My3 username/password. You can register at https://my3account.three.ie/Sign_up
 
-# Build with Maven
+# Build with Gradle
 
-## Build APK and WAR
+## Build APK
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 2. Export ANDROID_HOME pointing to your Android SDK
-3. Install Android core libraries (4.4.2_r3) and support libraries (support v4, appcompat v7). I used https://github.com/mosabua/maven-android-sdk-deployer for this.
-4. Install maven and from root project directory:
-5. Execute 'mvn clean'
-6. Execute 'mvn compile'
-7. Execute 'mvn package'
+3. Install Android support libraries (support v4, appcompat v7) using the Android SDK Manager.
+4. Go to the PrepayCreditAndroid folder from command line and execute: ``./gradlew assemble``
 
 # Contribute
 
@@ -49,17 +46,9 @@ along with Prepay Credit for Android.  If not, see <http://www.gnu.org/licenses/
   http://jsoup.org/  
   MIT License: http://jsoup.org/license  
 
-* JSON  
-  http://www.json.org/  
-  MIT License: http://www.json.org/license.html  
-  
 * Joda Time  
   http://joda-time.sourceforge.net  
   Apache License v2: http://joda-time.sourceforge.net/license.html
-
-* Apache HttpClient  
-  http://hc.apache.org/httpcomponents-client-ga/index.html  
-  Apache License v2: http://www.apache.org/licenses/LICENSE-2.0.txt  
 
 * Application Crash Reporting for Android  
   http://acra.ch/  
