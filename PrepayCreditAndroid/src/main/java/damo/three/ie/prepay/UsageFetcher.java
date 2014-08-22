@@ -105,6 +105,16 @@ class UsageFetcher {
             if (m1.matches()) {
                 pageContent = processRequest.process(m1.group(1));
             }
+
+            //As of 22-08-2014, this page comes up a second time, with a new token. This time without SSL!
+            if (pageContent.contains("here</a> to access the service you requested.</p>")) {
+                Pattern p2 = Pattern.compile(Constants.MY3_SERVICE_REGEX, Pattern.DOTALL);
+                Matcher m2 = p2.matcher(pageContent);
+                if (m2.matches()) {
+                    pageContent = processRequest.process(m2.group(1));
+                }
+            }
+
             if (pageContent.contains("<p><strong>Your account balance.</strong></p>")) {
                 parseUsage();
             } else {
@@ -112,6 +122,7 @@ class UsageFetcher {
                     reportErrorFetchingUsage();
                 }
             }
+
         } else if (pageContent.contains("This service is currently unavailable. Please try again later.")) {
             // Known service error from three.
             throw new PrepayException("my3account.three.ie is reporting: \"This service is currently unavailable. " +

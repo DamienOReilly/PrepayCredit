@@ -25,6 +25,7 @@ package damo.three.ie.net;
 import android.content.Context;
 import damo.three.ie.R;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -89,6 +90,7 @@ public class ThreeHttpClient {
 
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("https", new EasySSLSocketFactory(trusted), 443));
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 
         ClientConnectionManager ccm = new ThreadSafeClientConnManager(ThreeHttpParameters.getParameters(), registry);
 
