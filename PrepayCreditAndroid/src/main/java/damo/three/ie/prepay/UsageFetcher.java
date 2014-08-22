@@ -56,11 +56,13 @@ class UsageFetcher {
     private List<NameValuePair> postData = null;
     private ProcessRequest processRequest;
     private boolean runningInBackground = false;
+    private Context context;
 
     public UsageFetcher(Context context, boolean runningInBackground) throws CertificateException,
             NoSuchAlgorithmException, KeyStoreException,
             IOException {
         this.runningInBackground = runningInBackground;
+        this.context = context;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         DefaultHttpClient httpClient = ThreeHttpClient.getInstance(context).getHttpClient();
         processRequest = new ProcessRequest(httpClient);
@@ -76,6 +78,19 @@ class UsageFetcher {
      * Begin fetching the usage
      */
     public JSONArray getUsages() throws IOException, AccountException, JSONException, PrepayException {
+
+        // Some change on 22-08-2014 means that when we have cookies cached from previous login and this login session
+        // is expired, if we perform a login and go through login steps, we are greeted with login page again. Clear
+        // cookies prior to prevent this.
+        try {
+            ThreeHttpClient.getInstance(context).getHttpClient().getCookieStore().clear();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
         // Attempt to log in.
         pageContent = processRequest.process(Constants.MY3_ACCOUNT_PAGE);
         Log.d(Constants.TAG, "using: my3account.three.ie");
