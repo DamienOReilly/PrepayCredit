@@ -86,12 +86,11 @@ public class LoginActivity extends Activity {
         // will display it to the user. But only if ICCID is available. Non SIM tablets won't have this.
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         LinearLayout iccidLayout = (LinearLayout) findViewById(R.id.iccid_layout);
-        iccidLayout.setVisibility(View.VISIBLE);
 
         iccid = tm.getSimSerialNumber();
         if (iccid != null && (iccid.length() >= 6)) {
+            iccidLayout.setVisibility(View.VISIBLE);
             iccid = iccid.substring(iccid.length() - 6);
-
             textViewSimIccid = (TextView) findViewById(R.id.sim_iccid);
             textViewSimIccid.setText(String.format(getString(R.string.sim_iccid), iccid));
             textViewSimIccid.setOnClickListener(loginClickListener);
