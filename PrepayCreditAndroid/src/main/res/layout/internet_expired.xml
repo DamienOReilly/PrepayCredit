@@ -41,20 +41,14 @@
 
         <Button
             android:id="@+id/buttonOk"
-            style="@style/PrepayButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/PrepayButtonStandard"
             android:layout_weight="0.5"
-            android:background="@drawable/blue_button"
             android:text="@string/ok" />
 
         <Button
             android:id="@+id/buttonThree"
-            style="@style/PrepayButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/PrepayButtonStandard"
             android:layout_weight="0.5"
-            android:background="@drawable/blue_button"
             android:text="@string/my3" />
 
     </LinearLayout>

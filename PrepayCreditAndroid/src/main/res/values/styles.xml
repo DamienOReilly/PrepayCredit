@@ -23,16 +23,19 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="ActionBarCustom" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="colorPrimary">@color/material_primary</item>
+        <item name="colorPrimaryDark">@color/material_primary_darker</item>
+        <item name="colorAccent">@color/material_accent</item>
     </style>
 
-    <style name="Widget.Styled.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/actionbar_background</item>
-        <item name="backgroundStacked">@color/dark_blue</item>
+    <style name="LoginTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/material_primary</item>
+        <item name="colorPrimaryDark">@color/material_primary_darker</item>
+        <item name="colorAccent">@color/material_accent</item>
     </style>
 
     <!-- Activity to alert the user about their internet add-on expiring -->
-    <style name="Theme.Transparent" parent="android:Theme">
+    <style name="Theme.Transparent" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -55,4 +58,15 @@
         <item name="android:shadowRadius">2</item>
     </style>
 
+    <style name="PrepayButtonStandard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginLeft">3dp</item>
+        <item name="android:layout_marginRight">3dp</item>
+        <item name="android:background">@color/material_primary_darker</item>
+        <item name="android:padding">15dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

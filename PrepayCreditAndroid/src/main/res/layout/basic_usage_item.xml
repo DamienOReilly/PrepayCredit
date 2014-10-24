@@ -30,7 +30,7 @@
         android:layout_width="0px"
         android:layout_height="fill_parent"
         android:layout_weight="0.7"
-        android:textColor="@android:color/primary_text_light_nodisable"
+        android:textColor="@color/secondary_text_default_material_light"
         android:textIsSelectable="false"
         android:textSize="14sp" />
 
@@ -39,8 +39,8 @@
         android:layout_width="0px"
         android:layout_height="fill_parent"
         android:layout_weight="0.3"
-        android:gravity="right"
-        android:textColor="@android:color/primary_text_light_nodisable"
+        android:gravity="end"
+        android:textColor="@color/secondary_text_default_material_light"
         android:textIsSelectable="false"
         android:textSize="14sp" />
 

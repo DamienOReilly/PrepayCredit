@@ -63,7 +63,7 @@ public class BasicUsageLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        layoutParams.setMargins(15, 15, 15, 0);
+        layoutParams.setMargins(10, 10, 10, 0);
 
         LinearLayout usageItemsView = (LinearLayout) view.findViewById(R.id.basic_usage_items_view);
 

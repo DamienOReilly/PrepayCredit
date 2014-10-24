@@ -23,7 +23,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/actionbar_background"
+    android:background="@color/material_primary"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="15dp">
@@ -46,8 +46,8 @@
             android:inputType="number"
             android:padding="15dp"
             android:singleLine="true"
-            android:textColor="@color/dark_blue"
-            android:textColorHint="@color/light_blue" />
+            android:textColor="@color/material_primary_darker"
+            android:textColorHint="@color/material_primary" />
 
         <EditText
             android:id="@+id/password"
@@ -60,21 +60,13 @@
             android:inputType="textPassword"
             android:padding="15dp"
             android:singleLine="true"
-            android:textColor="@color/dark_blue"
-            android:textColorHint="@color/light_blue" />
+            android:textColor="@color/material_primary_darker"
+            android:textColorHint="@color/material_primary" />
 
         <Button
             android:id="@+id/continue_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            android:background="@drawable/darker_blue_button"
-            android:padding="15dp"
-            android:text="@string/continue_button"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            style="@style/PrepayButtonStandard"
+            android:text="@string/continue_button" />
 
     </LinearLayout>
 
@@ -90,7 +82,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_weight="0.5"
-            android:gravity="left|center"
+            android:gravity="start|center"
             android:text="@string/forgot_password_label"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/white"

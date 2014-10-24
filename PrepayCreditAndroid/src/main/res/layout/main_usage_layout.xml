@@ -49,16 +49,18 @@
                 android:id="@+id/error_close_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/close"
-                android:src="@drawable/ic_action_cancel" />
+                android:src="@drawable/abc_ic_clear_mtrl_alpha" />
 
             <TextView
                 android:id="@+id/error_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/error_close_button"
+                android:layout_toStartOf="@id/error_close_button"
                 android:gravity="center"
                 android:padding="5dp"
                 android:textAppearance="?android:textAppearanceSmall"
@@ -71,8 +73,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@drawable/last_refreshed_textview_background"
+            android:background="@color/material_primary"
             android:gravity="center"
             android:padding="10dp"
             android:textColor="@android:color/primary_text_dark_nodisable"

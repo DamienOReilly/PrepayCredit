@@ -25,31 +25,27 @@
 
     <item
         android:id="@+id/menu_refresh"
-        android:icon="@drawable/ic_action_refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/refresh"
         prepaycredit:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_settings"
-        android:icon="@drawable/ic_action_settings"
-        android:showAsAction="never"
+        prepaycredit:showAsAction="never"
         android:title="@string/settings" />
 
     <item
         android:id="@+id/menu_my3_website"
-        android:icon="@drawable/ic_action_web_site"
-        android:showAsAction="never"
+        prepaycredit:showAsAction="never"
         android:title="@string/my3_website" />
 
     <item
         android:id="@+id/menu_about"
-        android:icon="@drawable/ic_action_help"
-        android:showAsAction="never"
+        prepaycredit:showAsAction="never"
         android:title="@string/about" />
 
     <item
         android:id="@+id/menu_logout"
-        android:icon="@drawable/ic_action_cancel"
-        android:showAsAction="never"
+        prepaycredit:showAsAction="never"
         android:title="@string/logout" />
 </menu>

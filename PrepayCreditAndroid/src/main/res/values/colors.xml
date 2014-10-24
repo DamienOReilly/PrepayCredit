@@ -21,9 +21,9 @@
   -->
 
 <resources>
-    <color name="darker_blue">#ff165094</color>
-    <color name="dark_blue">#ff006990</color>
-    <color name="light_blue">#ff3ecbff</color>
+    <color name="material_accent">#e040fb</color>
+    <color name="material_primary_darker">#455ede</color>
+    <color name="material_primary">#5677fc</color>
     <color name="layout_background">#e5e5e5</color>
 
     <color name="holo_purple">#ffaa66cc</color>

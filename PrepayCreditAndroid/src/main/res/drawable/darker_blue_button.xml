@@ -22,18 +22,28 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true">
-        <shape>
-            <solid android:color="@color/darker_blue" />
-            <corners android:radius="3dp" />
-            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
-        </shape>
-    </item>
+    <!--<item android:state_pressed="true">-->
+    <!--<shape>-->
+    <!--<solid android:color="@color/material_accent" />-->
+    <!--<corners android:radius="2dp" />-->
+    <!--<padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />-->
+    <!--</shape>-->
+    <!--</item>-->
     <item>
-        <shape>
-            <solid android:color="@color/dark_blue" />
-            <corners android:radius="4dp" />
-            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
-        </shape>
+        <layer-list>
+            <item android:left="5dp" android:top="5dp">
+                <shape>
+                    <corners android:radius="2dp" />
+                    <solid android:color="@color/secondary_text_default_material_light" />
+                </shape>
+            </item>
+            <item android:bottom="2dp" android:right="2dp">
+                <shape>
+                    <solid android:color="@color/material_primary_darker" />
+                    <corners android:radius="2dp" />
+                    <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
+                </shape>
+            </item>
+        </layer-list>
     </item>
 </selector>

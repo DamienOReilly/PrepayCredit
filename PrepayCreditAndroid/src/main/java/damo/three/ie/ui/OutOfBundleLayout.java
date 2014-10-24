@@ -48,7 +48,7 @@ public class OutOfBundleLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        layoutParams.setMargins(15, 15, 15, 15);
+        layoutParams.setMargins(10, 10, 10, 10);
 
         LinearLayout outOfBundleItemsView = (LinearLayout) view.findViewById(R.id.outofbundle_view);
 
