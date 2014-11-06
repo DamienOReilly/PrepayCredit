@@ -25,7 +25,7 @@
 
     <item
         android:id="@+id/menu_refresh"
-        android:icon="@drawable/ic_refresh_white_24dp"
+        android:icon="@drawable/ic_refresh"
         android:title="@string/refresh"
         prepaycredit:showAsAction="ifRoom" />
 

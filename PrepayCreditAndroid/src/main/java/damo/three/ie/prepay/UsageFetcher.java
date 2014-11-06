@@ -56,7 +56,7 @@ class UsageFetcher {
     private List<NameValuePair> postData = null;
     private ProcessRequest processRequest;
     private boolean runningInBackground = false;
-    private Context context;
+    private final Context context;
 
     public UsageFetcher(Context context, boolean runningInBackground) throws CertificateException,
             NoSuchAlgorithmException, KeyStoreException,

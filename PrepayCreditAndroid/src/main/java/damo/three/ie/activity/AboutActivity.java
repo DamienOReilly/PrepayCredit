@@ -24,76 +24,33 @@ package damo.three.ie.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import damo.three.ie.R;
+import damo.three.ie.ui.SlidingTabLayout;
 import damo.three.ie.ui.ViewPagerAdapter;
 
 public class AboutActivity extends ActionBarActivity {
-
-    private ActionBar actionBar;
-    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
 
-        // Activate Navigation Mode Tabs
-        actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.about_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        viewPager = (ViewPager) findViewById(R.id.pager);
-
-        // Activate Fragment Manager
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        // Capture ViewPager page swipes
-        ViewPager.SimpleOnPageChangeListener viewPagerListener = new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                actionBar.setSelectedNavigationItem(position);
-            }
-        };
-
-        viewPager.setOnPageChangeListener(viewPagerListener);
-        // Locate the adapter class called ViewPagerAdapter.java
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(fragmentManager);
-        // Set the View Pager Adapter into ViewPager
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(fragmentManager, getApplicationContext());
         viewPager.setAdapter(viewPagerAdapter);
 
-        // Capture tab button clicks
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-
-            @Override
-            public void onTabSelected(Tab tab, FragmentTransaction ft) {
-                // Pass the position on tab click to ViewPager
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-            }
-
-            @Override
-            public void onTabReselected(Tab tab, FragmentTransaction ft) {
-            }
-        };
-
-        // Create first Tab
-        Tab tab = actionBar.newTab().setText(R.string.about).setTabListener(tabListener);
-        actionBar.addTab(tab);
-
-        // Create second Tab
-        tab = actionBar.newTab().setText(R.string.changelog).setTabListener(tabListener);
-        actionBar.addTab(tab);
+        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setViewPager(viewPager);
     }
 
     @Override
@@ -110,5 +67,4 @@ public class AboutActivity extends ActionBarActivity {
         }
         return true;
     }
-
 }

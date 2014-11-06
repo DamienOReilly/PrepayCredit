@@ -23,6 +23,7 @@
 package damo.three.ie.ui;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -184,6 +185,14 @@ public class BasicUsageLayout extends LinearLayout {
         }
         // All done, add the usage group.
         addView(view, layoutParams);
+    }
+
+    public BasicUsageLayout(Context context) {
+        super(context);
+    }
+
+    public BasicUsageLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     /**

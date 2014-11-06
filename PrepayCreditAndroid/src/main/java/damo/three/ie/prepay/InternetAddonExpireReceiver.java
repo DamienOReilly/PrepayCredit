@@ -58,7 +58,7 @@ public class InternetAddonExpireReceiver extends BroadcastReceiver {
         // Clicking on the notification opens the InternetExpirationActivity.
         Intent myIntent = new Intent(context, InternetExpirationActivity.class);
         myIntent.putExtra(InternetUsageRegistry.INTERNET_EXPIRED, alreadyExpired);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent, PendingIntent.FLAG_ONE_SHOT);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
 

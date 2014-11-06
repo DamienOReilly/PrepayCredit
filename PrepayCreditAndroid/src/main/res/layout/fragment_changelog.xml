@@ -39,7 +39,7 @@
             android:id="@+id/changelog_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/primary_text_light_nodisable" />
+            android:textColor="@color/primary_text_default_material_light" />
     </LinearLayout>
 
 </ScrollView>

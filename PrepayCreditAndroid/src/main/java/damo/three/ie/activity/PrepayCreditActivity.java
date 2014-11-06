@@ -33,6 +33,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -112,8 +113,8 @@ public class PrepayCreditActivity extends ActionBarActivity implements
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(new OnSwipeRefreshLayoutListener());
-        swipeRefreshLayout.setColorScheme(R.color.holo_purple, R.color.holo_green_light, R.color.holo_orange_light,
-                R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(R.color.holo_purple, R.color.holo_green_light,
+                R.color.holo_orange_light, R.color.holo_red_light);
 
         scrollView = (ExtendedScrollView) findViewById(R.id.usage_scroll_view);
         scrollView.setOnScrollViewListener(new ExtendedScrollView.OnScrollViewListener() {
@@ -147,6 +148,18 @@ public class PrepayCreditActivity extends ActionBarActivity implements
             displayUsages(updateFragment.getItems());
             updateLastRefreshedTextView(new PrettyTime().format(new Date((updateFragment.getDateTime().getMillis()))));
         }
+
+        //####################################################################################
+        /**
+         * Temporary bug workaround for:
+         * https://code.google.com/p/android/issues/detail?id=77712
+         */
+        TypedValue typed_value = new TypedValue();
+        getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+        swipeRefreshLayout.setProgressViewOffset(false, 0,
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics()));
+        //####################################################################################
+
         /**
          * if screen was rotated and Activity was re-created while we were fetching usage info, then enable the swipe
          * refresh animation.

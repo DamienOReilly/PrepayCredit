@@ -21,10 +21,10 @@
   -->
 
 <resources>
+    <color name="purple_a700">#aa00ff</color>
     <color name="material_accent">#e040fb</color>
     <color name="material_primary_darker">#455ede</color>
     <color name="material_primary">#5677fc</color>
-    <color name="layout_background">#e5e5e5</color>
 
     <color name="holo_purple">#ffaa66cc</color>
     <color name="holo_green_light">#ff99cc00</color>

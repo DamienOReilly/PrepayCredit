@@ -24,12 +24,8 @@
     package="damo.three.ie"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto"
-    android:versionCode="15"
-    android:versionName="0.13">
-
-    <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="19" />
+    android:versionCode="16"
+    android:versionName="0.14">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -43,8 +39,7 @@
         android:name=".PrepayCreditApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:logo="@drawable/ic_actionbar_icon">
+        android:label="@string/app_name">
 
         <activity
             android:name=".activity.LoginActivity"
@@ -59,10 +54,10 @@
         <activity
             android:name=".activity.PrepayCreditActivity"
             android:label="@string/app_name"
-            android:theme="@style/ActionBarCustom" />
+            android:theme="@style/PrepayCreditTheme" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:theme="@style/ActionBarCustom" />
+            android:theme="@style/PrepayCreditTheme" />
         <activity
             android:name="org.acra.CrashReportDialog"
             android:excludeFromRecents="true"
@@ -72,11 +67,11 @@
         <activity
             android:name=".activity.InternetExpirationActivity"
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.Dialog" />
+            android:theme="@style/InternetExpiredTheme" />
         <activity
             android:name=".activity.AboutActivity"
             android:label="@string/about_activity_title"
-            android:theme="@style/ActionBarCustom" />
+            android:theme="@style/AboutTheme" />
 
         <receiver
             android:name=".prepay.InternetAddonExpireReceiver"

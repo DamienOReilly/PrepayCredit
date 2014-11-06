@@ -27,5 +27,5 @@
         android:id="@+id/merged_child_item"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="right" />
+        android:gravity="end" />
 </LinearLayout>

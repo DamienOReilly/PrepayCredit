@@ -22,9 +22,11 @@
 
 package damo.three.ie.ui;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import damo.three.ie.R;
 import damo.three.ie.fragment.AboutFragment;
 import damo.three.ie.fragment.ChangeLogFragment;
 
@@ -33,14 +35,16 @@ import damo.three.ie.fragment.ChangeLogFragment;
  */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
-    public ViewPagerAdapter(FragmentManager fm) {
+    private final Context context;
+
+    public ViewPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
     public Fragment getItem(int arg) {
         switch (arg) {
-
             case 0:
                 return new AboutFragment();
             case 1:
@@ -54,4 +58,14 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         return 2;
     }
 
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return context.getString(R.string.about);
+            case 1:
+                return context.getString(R.string.changelog);
+        }
+        return null;
+    }
 }

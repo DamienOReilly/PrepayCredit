@@ -28,6 +28,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.WindowCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -41,16 +43,15 @@ import damo.three.ie.util.DateUtils;
  * Activity which deals with UI that is shown to the user when their internet add-on is about to expire or has already
  * expired.
  */
-public class InternetExpirationActivity extends Activity {
+public class InternetExpirationActivity extends ActionBarActivity {
 
     private TextView textViewSummary = null;
     private boolean alreadyExpired = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        supportRequestWindowFeature(Window.FEATURE_LEFT_ICON);
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_LEFT_ICON);
         setContentView(R.layout.internet_expired);
         getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ic_launcher);
 

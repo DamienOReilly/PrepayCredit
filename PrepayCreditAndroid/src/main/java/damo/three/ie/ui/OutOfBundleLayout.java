@@ -23,6 +23,7 @@
 package damo.three.ie.ui;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,5 +66,13 @@ public class OutOfBundleLayout extends LinearLayout {
             outOfBundleItemsView.addView(usageItemView, layoutParamsUsageItem);
         }
         addView(view, layoutParams);
+    }
+
+    public OutOfBundleLayout(Context context) {
+        super(context);
+    }
+
+    public OutOfBundleLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 }
