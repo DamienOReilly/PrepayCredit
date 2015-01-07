@@ -152,11 +152,11 @@ public class BasicUsageLayout extends LinearLayout {
                         if (childLinearLayout.isShown()) {
                             childLinearLayout.setVisibility(View.GONE);
                             mergedGroupTotal.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                    R.drawable.expander_open_holo_light, 0);
+                                    R.drawable.ic_expand_more, 0);
                         } else {
                             childLinearLayout.setVisibility(View.VISIBLE);
                             mergedGroupTotal.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                    R.drawable.expander_close_holo_light, 0);
+                                    R.drawable.ic_expand_less, 0);
                         }
                     }
                 });
