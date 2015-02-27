@@ -25,11 +25,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import damo.three.ie.net.ProcessRequest;
 import damo.three.ie.net.ThreeHttpClient;
 import damo.three.ie.util.AccountException;
 import damo.three.ie.util.HtmlUtilities;
 import damo.three.ie.util.PrepayException;
+
 import org.acra.ACRA;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -97,7 +99,7 @@ class UsageFetcher {
 
         // Were we brought to the login page? If so, login. We sometimes skip this if our cookie still holds a valid
         // session.
-        if (pageContent.contains("<label for=\"username\" class=\"portlet-form-input-label\">")) {
+        if (pageContent.contains("login-field-username")) {
             Pattern p1 = Pattern.compile(Constants.LOGIN_TOKEN_REGEX, Pattern.DOTALL);
             Matcher m1 = p1.matcher(pageContent);
             if (m1.matches()) {
@@ -141,6 +143,10 @@ class UsageFetcher {
         } else if (pageContent.contains("This service is currently unavailable. Please try again later.")) {
             // Known service error from three.
             throw new PrepayException("my3account.three.ie is reporting: \"This service is currently unavailable. " +
+                    "Please try again later.\"");
+        } else if (pageContent.contains("essential maintenance work")) {
+            // Known service error from three.
+            throw new PrepayException("my3account.three.ie is reporting that they doing maintenance work and are unavailable at the minute. " +
                     "Please try again later.\"");
         } else {
             // Unknown response
