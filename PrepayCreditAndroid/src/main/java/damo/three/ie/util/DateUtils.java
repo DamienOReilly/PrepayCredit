@@ -77,7 +77,7 @@ public class DateUtils {
 
         if (input.equals("Today")) {
             return Calendar.getInstance().getTime().getTime();
-        } else if (input.equals("Won't expire**")) {
+        } else if (input.equals("Wont expire**")) {
             return WONT_EXPIRE;
         } else if (input.equals("In queue")) {
             return QUEUED;
