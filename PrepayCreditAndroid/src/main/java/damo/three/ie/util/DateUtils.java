@@ -77,7 +77,7 @@ public class DateUtils {
 
         if (input.equals("Today")) {
             return Calendar.getInstance().getTime().getTime();
-        } else if (input.equals("Wont expire**")) {
+        } else if (input.equals("Wont expire**") || input.equals("Won't expire**")) {
             return WONT_EXPIRE;
         } else if (input.equals("In queue")) {
             return QUEUED;
@@ -86,7 +86,6 @@ public class DateUtils {
             // it will be filtered out later.
             return ALREADY_EXPIRED;
         } else {
-
             DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.UK);
             DateTime dt = formatter.parseDateTime(input.replace("Expires ", ""));
             return dt.getMillis();

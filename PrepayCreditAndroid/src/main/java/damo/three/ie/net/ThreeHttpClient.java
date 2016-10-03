@@ -47,7 +47,7 @@ public class ThreeHttpClient {
     private ThreeHttpClient(Context context) throws CertificateException, NoSuchAlgorithmException, KeyStoreException,
             IOException {
         this.context = context;
-        setupHttpClient();
+        this.httpClient = new DefaultHttpClient(ThreeHttpParameters.getParameters());
     }
 
     /**
@@ -64,37 +64,6 @@ public class ThreeHttpClient {
         }
 
         return threeHttpClient;
-    }
-
-    /**
-     * Setup our HttpClient with custom SSLSocketFactory
-     *
-     * @throws KeyStoreException
-     * @throws NoSuchAlgorithmException
-     * @throws CertificateException
-     * @throws IOException
-     */
-    private void setupHttpClient() throws KeyStoreException, NoSuchAlgorithmException, CertificateException,
-            IOException {
-
-        final KeyStore trusted = KeyStore.getInstance("BKS");
-
-        // I included a BKS keystore with my3account.three.ie's Root Cert
-        // some older android devices don't have these certs in their trust list.
-        final InputStream in = context.getResources().openRawResource(R.raw.my3);
-        try {
-            trusted.load(in, "damopass".toCharArray());
-        } finally {
-            in.close();
-        }
-
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("https", new EasySSLSocketFactory(trusted), 443));
-        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-
-        ClientConnectionManager ccm = new ThreadSafeClientConnManager(ThreeHttpParameters.getParameters(), registry);
-
-        httpClient = new DefaultHttpClient(ccm, ThreeHttpParameters.getParameters());
     }
 
     public DefaultHttpClient getHttpClient() {
